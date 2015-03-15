@@ -5,27 +5,13 @@
  */
 package starprocessor;
 
-import com.googlecode.javacv.cpp.*;
-import static com.googlecode.javacv.cpp.avutil.M_PI;
-import static com.googlecode.javacv.cpp.opencv_core.*;
-import com.googlecode.javacv.cpp.opencv_core.CvMat;
-import static com.googlecode.javacv.cpp.opencv_highgui.*;
-import static com.googlecode.javacv.cpp.opencv_imgproc.*;
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
 //import static opencv.simple.ImageUtils.applyBinaryInverted;
-
 import java.util.*;
 import java.io.*;
+import java.lang.Math.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eso.fits.*;
-import org.eso.fits.Fits;
-import org.eso.fits.FitsException;
-import org.eso.fits.FitsFile;
-import org.eso.fits.FitsMatrix;
-
-import java.util.Vector;
 
 /**
  *
@@ -40,47 +26,112 @@ public class StarProcessor {
 
         FitsFile file = openFitsFile("/home/josemlp/pruebasEnfoque/nucleo24800_000.fit");
         FitsMatrix m = getMatrix(file);
-        int maxcount = 1000;
-        float peaks[][] = new float[maxcount][2];
-        peaks = getAllPeak(m, 50, 50, 1000);
 
-        for (int i = 0; i < maxcount && peaks[i][0]>0; i++) {
-            System.out.println(peaks[i][0]);
-            System.out.println(peaks[i][1]);
-            System.out.println(peaks[i][2]);
-            System.out.println("-------------------");
+        List<Star> stars = new ArrayList();
+        stars = getAllPeak(m, 10, 50);
+        stars=filterStarByMinDistance(stars, 5);
+        printStarList(stars);
+
+    }
+
+    public static void printStarList(List<Star> stars) {
+
+        for (Star star : stars) {
+            if (star.isValid()) {
+                System.out.println(star.toString());
+            }
+
         }
 
     }
 
-    public static float[][] getAllPeak(FitsMatrix dm, int factorPlusMean, int margin, int maxcount) throws FitsException {
+    public static List<Star> filterStarByMinDistance(List<Star> stars, float mindis) {
 
-        float peaks[][] = new float[maxcount][3];
+        Star s, s1;
+        float dis;
+
+        for (int i = 0; i < stars.size()-1; i++) {
+            s = stars.get(i);
+
+            for (int j = 0; j < stars.size()-1; j++) {
+                if (i == j) {
+                    j++;
+                }
+                s1 = stars.get(j);
+                dis = calculateDistanceStar(s, s1);
+                //System.out.println(dis);
+
+                if (dis < mindis) {
+                    s.unableStar();
+                    s1.unableStar();
+                }
+
+            }
+
+        }
+
+        return stars;
+
+    }
+
+    public static float calculateDistanceStar(Star s1, Star s2) {
+
+        int h = Math.abs(s1.getCoordy() - s2.getCoordy());
+        int l = Math.abs(s1.getCoordx() - s2.getCoordx());
+        float d = (int) Math.sqrt(Math.pow(h, 2) + Math.pow(l, 2));
+
+        return d;
+
+    }
+
+    public static float getValue(int x, int y, FitsMatrix dm) throws FitsException {
+
+        float p[] = new float[1];
+        int n[] = getDimension(dm);
+        float val;
+        int dim = n[0];
+
+        dm.getFloatValues(((y) * (dim)) + x, 1, p);
+        val = p[0];
+        return val;
+
+    }
+
+    public static List getAllPeak(FitsMatrix dm, int factorPlusMean, int margin) throws FitsException {
+
+        List<Star> stars = new ArrayList();
+        Star star;
 
         int n[] = getDimension(dm);
+
+        int col = n[0];
+        int row = n[1];
+
         float mean = getMean(dm);
         float max = getMaximun(dm);
 
-        int count = 0;
         int umbralMin = (int) (mean) * factorPlusMean;
-        int umbralMax = (int) (max - ((max * 5) / 100));
+        int umbralMax = (int) (max - ((max * 10) / 100));
+        
+        System.out.println("Umbral min: " + umbralMin);
+        System.out.println("Umbral max: " + umbralMax);
+        //To test
+        //int umbralMin = (int) max - 100;
+        //int umbralMax = (int) max + 100;
 
-        for (int i = 0; i < (n[0] - margin); i++) {
-            for (int j = 0; j < (n[1] - margin); j++) {
-                float t = IsPeak(i, j, n[1], dm, umbralMin, umbralMax);
+        for (int i = 0 + margin; i < (col - margin); i++) {
+            for (int j = 0 + margin; j < (row - margin); j++) {
+                star = IsPeak(i, j, col, dm, umbralMin, umbralMax);
 
-                if ((t > 0) && (count < maxcount)) {
-                    peaks[count][0] = t;
-                    peaks[count][1] = i;
-                    peaks[count][2] = j;
-                    count++;
-
+                if (star.isValid()) {
+                    //System.out.println(star.toString());
+                    stars.add(star);
                 }
 
             }
         }
 
-        return peaks;
+        return stars;
 
     }
 
@@ -91,9 +142,11 @@ public class StarProcessor {
             file = new FitsFile(FileName);
 
         } catch (IOException ex) {
-            Logger.getLogger(StarProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StarProcessor.class
+                    .getName()).log(Level.SEVERE, null, ex);
         } catch (FitsException ex) {
-            Logger.getLogger(StarProcessor.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(StarProcessor.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         return file;
@@ -171,15 +224,15 @@ public class StarProcessor {
 
     }
 
-    public static float IsPeak(int coorx, int coory, int dim, FitsMatrix dm, float umbralMinimo, float umbralMaximo) throws FitsException {
+    public static Star IsPeak(int coorx, int coory, int dim, FitsMatrix dm, float umbralMinimo, float umbralMaximo) throws FitsException {
 
-        //float umbralMinimo, float umbralMaximo) throws FitsException {
         //   0  | 1 | 2   //
         //   3  | p | 4   //
         //   5  | 6 | 7   //
         float p[] = new float[1];
-
-        float peak = 0;
+        Boolean isPeak = true;
+        Star star = new Star();
+        float lux;
 
         //Adyacentes.
         float ady[][] = new float[8][1];
@@ -197,25 +250,22 @@ public class StarProcessor {
         dm.getFloatValues((coorx) + ((coory + 1) * dim), 1, ady[6]);
         dm.getFloatValues((coorx + 1) + ((coory + 1) * dim), 1, ady[7]);
 
+        lux = p[0];
+
         for (int i = 0; i < 8; i++) {
-            if (p[0] < ady[i][0]) {
-                peak = -1;
+            if (lux < ady[i][0]) {
+                isPeak = false;
                 break;
             }
         }
 
-        if (peak != -1) {
-
-            if ((p[0] > umbralMinimo) && (p[0] < umbralMaximo)) {
-                peak = p[0];
-
-            } else {
-                peak = 0;
+        if (isPeak) {
+            if ((lux > umbralMinimo) && (lux < umbralMaximo)) {
+                star.InicializeStar(coorx, coory, lux, true);
             }
         }
 
-        return peak;
-
+        return star;
     }
 
     public static float getMaximun(FitsMatrix dm) {
