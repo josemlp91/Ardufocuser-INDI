@@ -71,6 +71,16 @@ public class Star {
         flagFocus = false;
     }
 
+    public float calculateDistanceStar(Star s) {
+
+        int h = Math.abs(this.getCoordy() - s.getCoordy());
+        int l = Math.abs(this.getCoordx() - s.getCoordx());
+        float d = (int) Math.sqrt(Math.pow(h, 2) + Math.pow(l, 2));
+
+        return d;
+
+    }
+
     @Override
     public String toString() {
         return "Star{" + "coordx=" + coordx + ", coordy=" + coordy + ", maxlux=" + maxlux + '}';
