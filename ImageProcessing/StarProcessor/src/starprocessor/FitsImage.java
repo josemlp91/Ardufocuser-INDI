@@ -113,6 +113,16 @@ public class FitsImage {
 
             }
 
+            int transpose[][] = new int[this.ncol][this.nrow];
+
+            for (int c = 0; c < this.nrow; c++) {
+                for (int d = 0; d < this.ncol; d++) {
+                    transpose[d][c] = ImageMatrix[c][d];
+                }
+            }
+
+            this.ImageMatrix = transpose;
+
             this.mean = this.mean / npix;
 
         } catch (IOException ex) {
@@ -228,29 +238,27 @@ public class FitsImage {
     }
 
     /**
-     * Genera archivo JPG.
+     * Genera archivo png iamgen.
      */
     public void SaveAsJPG() throws IOException {
 
-        short[] imageInByte = new short[nval];
-
-        for (int i = 0; i < this.nval; i++) {
-
-            imageInByte[i] = 9999;
-            //imageInByte[i] = (short) ImageArray[i]  ;
-            //System.out.println(imageInByte[i]);
-
-        }
-
-        BufferedImage image = byte2Buffered(imageInByte, this.ncol, this.nrow);
-        ImageIO.write(image, "png", new File("output.jpg"));
+        BufferedImage bufferedImage = Matrix2BufferedImage(BufferedImage.TYPE_USHORT_GRAY);
+        ImageIO.write(bufferedImage, "png", new File("output.png"));
 
     }
 
-    public static BufferedImage byte2Buffered(short[] pixels, int width, int height) throws IllegalArgumentException {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
+    public BufferedImage Matrix2BufferedImage(int type) {
+        BufferedImage bufferedImage = new BufferedImage(this.ncol, this.nrow, type);
+        for (int i = 0; i < this.ncol; i++) {
+            for (int j = 0; j < this.nrow; j++) {
 
-        return image;
+                int pixel = ImageMatrix[i][j];
+                bufferedImage.setRGB(i, j, pixel);
+
+            }
+        }
+
+        return bufferedImage;
     }
 
     public static BufferedImage read(byte[] bytes) {
@@ -261,7 +269,6 @@ public class FitsImage {
         }
     }
 
-    
     public void verbose() {
 
         System.out.println("Max value: " + this.max);

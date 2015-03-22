@@ -78,7 +78,15 @@ public class StarSet {
         }
 
     }
-    
-    public void  filterStarByMargin( int margin){}
+
+    public void filterStarByMargin(int margin, int dimx, int dimy) {
+
+        for (Star star : this.stars) {
+            if ((star.getCoordx() < margin) || (star.getCoordx() > dimx - margin)
+                    || (star.getCoordy() < margin) || (star.getCoordy() > dimy - margin)) {
+                star.unableStar();
+            }
+        }
+    }
 
 }

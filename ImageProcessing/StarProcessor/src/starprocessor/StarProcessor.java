@@ -49,12 +49,12 @@ public class StarProcessor {
         int umbralMax = max - (max * 20) / 100;
 
         StarSet stars = new StarSet();
-        //stars = getAllPeak(img, 50);
+        stars = getAllPeak(img, 50);
 
         stars.filterStarByInitialUmbral(umbralMin, umbralMax);
         stars.filterStarByMinDistance(10);
 
-        // stars.printStarSet();
+         stars.printStarSet();
     }
 
     /**
@@ -83,8 +83,8 @@ public class StarProcessor {
         //int umbralMin = (int) max - 100;
         System.out.println("Umbral min inicial: " + umbralMin);
 
-        for (int i = 0 + margin; i < (row - margin); i++) {
-            for (int j = 0 + margin; j < (col - margin); j++) {
+        for (int i = 0 + margin; i < (col - margin); i++) {
+            for (int j = 0 + margin; j < (row - margin) ; j++) {
                 star = IsPeak(i, j, umbralMin, fitsImage);
 
                 if (star.isValid()) {
