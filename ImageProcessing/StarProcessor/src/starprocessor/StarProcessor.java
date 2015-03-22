@@ -32,30 +32,11 @@ public class StarProcessor {
      * Rutina principal, para realizar pruebas sobre la libreria.
      *
      */
-    public static void main(String[] args) throws FitsException, IOException {
+    
+    //public static void main(String[] args) throws FitsException, IOException {
 
-        FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
-        //img.showKeyword();
-        //img.printImageMatrix();
-
-        img.SaveAsJPG();
-
-        double means = img.getMean();
-        int max = img.getMax();
-
-        System.out.println(max);
-
-        int umbralMin = (int) means * 2;
-        int umbralMax = max - (max * 20) / 100;
-
-        StarSet stars = new StarSet();
-        stars = getAllPeak(img, 50);
-
-        stars.filterStarByInitialUmbral(umbralMin, umbralMax);
-        stars.filterStarByMinDistance(10);
-
-         stars.printStarSet();
-    }
+     
+   // }
 
     /**
      * Busca estrellas, mediante una heuristica basada en puntos elevados en un
