@@ -5,6 +5,8 @@
  */
 package gui;
 
+import java.awt.image.BufferedImage;
+
 /**
  *
  * @author josemlp
@@ -17,6 +19,43 @@ public class GUIInternal extends javax.swing.JInternalFrame {
     public GUIInternal() {
         initComponents();
         
+    }
+    
+     public static void showImage(BufferedImage img) {
+        showImage(img, "Imagen");
+    }
+
+    public static void showImage(BufferedImage img, String title) {
+        GUIInternal vi = new GUIInternal();
+        
+        if (img != null) {
+            
+            
+            vi.getLienzo().setImageOriginal(img);
+            GUIMain.getEscritorio().add(vi);
+            vi.setVisible(true);
+
+            double width, height;
+            if (GUIMain.getEscritorio().getWidth() < img.getWidth()) {
+                width = GUIMain.getEscritorio().getWidth();
+            } else {
+                width = img.getWidth();
+            }
+            if (GUIMain.getEscritorio().getHeight() < img.getHeight()) {
+                height = GUIMain.getEscritorio().getHeight();
+            } else {
+                height = img.getHeight();
+            }
+
+            vi.setSize((int) width, (int) height);
+        }
+        vi.setTitle(title);
+
+    }
+    
+    
+    public  GUILienzo getLienzo() {
+        return lienzo;
     }
 
     /**

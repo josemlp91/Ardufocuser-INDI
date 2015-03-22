@@ -6,15 +6,47 @@
 
 package gui;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+
 /**
  *
  * @author josemlp
  */
 public class GUILienzo extends javax.swing.JPanel {
+    private BufferedImage img;
+    private BufferedImage imgDest;
 
     /** Creates new form Lienzo */
     public GUILienzo() {
         initComponents();
+    }
+    
+        @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        Graphics2D g2d = (Graphics2D) g;
+        if (imgDest != null) {
+            g2d.drawImage(imgDest, 0, 0, this);
+        }
+
+      
+    }
+    
+    public void setImageOriginal(BufferedImage img) {
+        if (img != null) {
+            setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
+            this.img = img;
+            setImageActual(img);
+        }
+    }
+    
+    
+    void setImageActual(BufferedImage imgDest) {
+        setPreferredSize(new Dimension(img.getWidth(), img.getHeight()));
+        this.imgDest = imgDest;
     }
 
     /** This method is called from within the constructor to

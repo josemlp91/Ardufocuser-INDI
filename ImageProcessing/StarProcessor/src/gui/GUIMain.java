@@ -5,8 +5,16 @@
  */
 package gui;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import static java.awt.image.BufferedImage.TYPE_USHORT_GRAY;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import org.eso.fits.FitsException;
 import starprocessor.FitsImage;
@@ -18,17 +26,37 @@ import static starprocessor.StarProcessor.getAllPeak;
  */
 public class GUIMain extends javax.swing.JFrame {
 
+     private GUIInternal vi;
+     
+     
     /**
      * Creates new form viwes
      */
-    public GUIMain() {
-       
-        
+    public GUIMain() throws IOException {
+
         initComponents();
-        setSize(1100,800);
-        GUIInternal vi = new GUIInternal();
-        escritorio.add(vi);
-        vi.setVisible(true);
+        setSize(1100, 800);
+        //GUIInternal vi = new GUIInternal();
+        //this.getEscritorio().add(vi);
+        //vi.setVisible(true);
+        
+        //File f = new File("/home/josemlp/Menú_006.png");
+
+         FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
+         img.Matrix2BufferedImage(WIDTH);
+          
+         img.SaveAsJPG();
+        
+        BufferedImage bimg = img.Matrix2BufferedImage(TYPE_USHORT_GRAY);
+        GUIInternal.showImage(bimg, "Hola");
+        
+        repaint();
+
+
+    }
+
+    public static JDesktopPane getEscritorio() {
+        return escritorio;
     }
 
     /**
@@ -475,27 +503,27 @@ public class GUIMain extends javax.swing.JFrame {
     private void openMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openMenuItemActionPerformed
         JFileChooser dlg = new JFileChooser();
         int resp = dlg.showOpenDialog(this);
-        if( resp == JFileChooser.APPROVE_OPTION) {
+        if (resp == JFileChooser.APPROVE_OPTION) {
             File f = dlg.getSelectedFile();
             //Código
         }        // TODO add your handling code here:
     }//GEN-LAST:event_openMenuItemActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-            /*
-        VentanaInterna vi = new VentanaInterna();
-        Escritorio.add(vi);
-        vi.setLocation(posX, posY);
-        posX+=50;posY+=50;
-        vi.setVisible(true);
+        /*
+         VentanaInterna vi = new VentanaInterna();
+         Escritorio.add(vi);
+         vi.setLocation(posX, posY);
+         posX+=50;posY+=50;
+         vi.setVisible(true);
 
-        */
+         */
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
         JFileChooser dlg = new JFileChooser();
         int resp = dlg.showOpenDialog(this);
-        if( resp == JFileChooser.APPROVE_OPTION) {
+        if (resp == JFileChooser.APPROVE_OPTION) {
             File f = dlg.getSelectedFile();
             //Código
         }        // TODO add your handling code here:
@@ -504,7 +532,7 @@ public class GUIMain extends javax.swing.JFrame {
     private void saveAsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsMenuItemActionPerformed
         JFileChooser dlg = new JFileChooser();
         int resp = dlg.showOpenDialog(this);
-        if( resp == JFileChooser.APPROVE_OPTION) {
+        if (resp == JFileChooser.APPROVE_OPTION) {
             File f = dlg.getSelectedFile();
             //Código
         }        // TODO add your handling code here:
@@ -515,8 +543,8 @@ public class GUIMain extends javax.swing.JFrame {
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void deleteMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteMenuItemActionPerformed
-      /*  if (biestable1) { barraEstado.setVisible(true); biestable1=false;}
-        else { barraEstado.setVisible(false); biestable1=true;}*/
+        /*  if (biestable1) { barraEstado.setVisible(true); biestable1=false;}
+         else { barraEstado.setVisible(false); biestable1=true;}*/
     }//GEN-LAST:event_deleteMenuItemActionPerformed
 
     private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
@@ -547,31 +575,32 @@ public class GUIMain extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) throws IOException, FitsException {
+
         
-        
-           FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
-        img.showKeyword();
+
+       // FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
+       // img.showKeyword();
         //img.printImageMatrix();
            /*
-        img.SaveAsJPG();
+         img.SaveAsJPG();
 
-        double means = img.getMean();
-        int max = img.getMax();
+         double means = img.getMean();
+         int max = img.getMax();
 
-        System.out.println(max);
+         System.out.println(max);
 
-        int umbralMin = (int) means * 2;
-        int umbralMax = max - (max * 20) / 100;
+         int umbralMin = (int) means * 2;
+         int umbralMax = max - (max * 20) / 100;
 
-        StarSet stars = new StarSet();
-        stars = getAllPeak(img, 50);
+         StarSet stars = new StarSet();
+         stars = getAllPeak(img, 50);
 
-        stars.filterStarByInitialUmbral(umbralMin, umbralMax);
-        stars.filterStarByMinDistance(10);
+         stars.filterStarByInitialUmbral(umbralMin, umbralMax);
+         stars.filterStarByMinDistance(10);
 
          stars.printStarSet();
-        */
-        
+         */
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -605,9 +634,28 @@ public class GUIMain extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GUIMain().setVisible(true);
+                try {
+                    new GUIMain().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(GUIMain.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
+    }
+    
+    public final GUIInternal newWindows(int width, int height) {
+        final GUIInternal vi = new GUIInternal();
+        escritorio.add(vi);
+        vi.setSize(width, height);
+        vi.setTitle("Lienzo ");
+        vi.setVisible(true);
+        setVentanaInterna(vi);
+       
+        return vi;
+    }
+    
+    public void setVentanaInterna(GUIInternal vi) {
+        this.vi = vi;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -618,7 +666,7 @@ public class GUIMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenuItem deleteMenuItem;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JDesktopPane escritorio;
+    private static javax.swing.JDesktopPane escritorio;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
