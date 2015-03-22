@@ -3,19 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package starprocessor;
+package gui;
 
 /**
  *
  * @author josemlp
  */
-public class VentanaInterna extends javax.swing.JInternalFrame {
+public class GUIInternal extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form VentanaInterna
      */
-    public VentanaInterna() {
+    public GUIInternal() {
         initComponents();
+        
     }
 
     /**
@@ -27,7 +28,12 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        lienzo = new starprocessor.Lienzo();
+        lienzo = new gui.GUILienzo();
+
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+        setAutoscrolls(true);
 
         javax.swing.GroupLayout lienzoLayout = new javax.swing.GroupLayout(lienzo);
         lienzo.setLayout(lienzoLayout);
@@ -56,6 +62,6 @@ public class VentanaInterna extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private starprocessor.Lienzo lienzo;
+    private gui.GUILienzo lienzo;
     // End of variables declaration//GEN-END:variables
 }

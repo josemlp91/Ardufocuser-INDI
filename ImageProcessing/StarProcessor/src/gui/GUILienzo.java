@@ -4,16 +4,16 @@
  * and open the template in the editor.
  */
 
-package starprocessor;
+package gui;
 
 /**
  *
  * @author josemlp
  */
-public class Lienzo extends javax.swing.JPanel {
+public class GUILienzo extends javax.swing.JPanel {
 
     /** Creates new form Lienzo */
-    public Lienzo() {
+    public GUILienzo() {
         initComponents();
     }
 
