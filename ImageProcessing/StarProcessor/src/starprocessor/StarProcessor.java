@@ -1,51 +1,72 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+/**
+ * Clase destinada a procesar imagenes Astronomicas, orientada a la extracción y
+ * enfoque de estrellas.
+ *
+ * @author @josemlp and @zerjillo Proyect Ardufocuser-INDI
+ * @version: 22/03/2015/A See {
+ * @linktourl https://github.com/josemlp91/Ardufocuser-INDI}
  */
 package starprocessor;
 
-//import static opencv.simple.ImageUtils.applyBinaryInverted;
 import java.util.*;
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.eso.fits.*;
 
-/**
- *
- * @author josemlp
- */
 public class StarProcessor {
 
-    private static Object star;
-
     /**
-     * @param args the command line arguments
+     * Rutina principal, para realizar pruebas sobre la libreria.
+     *
      */
-    public static void main(String[] args) throws FitsException {
-
+    public static void main(String[] args) throws FitsException, IOException {
 
         FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
         //img.showKeyword();
         //img.printImageMatrix();
 
+        img.SaveAsJPG();
+
         double means = img.getMean();
         int max = img.getMax();
+
+        System.out.println(max);
 
         int umbralMin = (int) means * 2;
         int umbralMax = max - (max * 20) / 100;
 
         StarSet stars = new StarSet();
-        stars = getAllPeak(img, 50);
+        //stars = getAllPeak(img, 50);
 
         stars.filterStarByInitialUmbral(umbralMin, umbralMax);
         stars.filterStarByMinDistance(10);
 
-        stars.printStarSet();
+        // stars.printStarSet();
     }
 
-  
+    /**
+     * Busca estrellas, mediante una heuristica basada en puntos elevados en un
+     * conjuntos de puntos vecinos.
+     *
+     * @param fittsImage Imagen donde realizar la busqueda.
+     * @param margin margen prudencial donde buscar picos estrellas.
+     * @return conjunto de estrellas encontradas.
+     *
+     */
+    //TODO eliminar parametro margen de la funcion y llevar a filterByMargin.
     public static StarSet getAllPeak(FitsImage fitsImage, int margin) throws FitsException {
 
         StarSet stars = new StarSet();
@@ -60,10 +81,8 @@ public class StarProcessor {
 
         //To test
         //int umbralMin = (int) max - 100;
-       
         System.out.println("Umbral min inicial: " + umbralMin);
 
-        
         for (int i = 0 + margin; i < (row - margin); i++) {
             for (int j = 0 + margin; j < (col - margin); j++) {
                 star = IsPeak(i, j, umbralMin, fitsImage);
@@ -80,6 +99,16 @@ public class StarProcessor {
 
     }
 
+    /**
+     * Compruba si un pixel cumple la condicioón de sobresalir sobre sus
+     * adyacentes y sobre un umbral mínimo inical.
+     *
+     * @param coorx Coordenada x.
+     * @param coory Coordenada y .
+     * @param minUmbral Umbral minimo.
+     * @return Estrella en caso de cumplir las condiciones descritas.
+     *
+     */
     public static Star IsPeak(int coorx, int coory, int minUmbral, FitsImage img) {
 
         //   0  | 1 | 2   //
@@ -123,7 +152,5 @@ public class StarProcessor {
 
         return star;
     }
-
-   
 
 }

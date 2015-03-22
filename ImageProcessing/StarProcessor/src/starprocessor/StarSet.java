@@ -78,5 +78,7 @@ public class StarSet {
         }
 
     }
+    
+    public void  filterStarByMargin( int margin){}
 
 }

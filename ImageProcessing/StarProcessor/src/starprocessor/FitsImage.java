@@ -1,19 +1,34 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
+ * Clase destinada a manejar y encapsular imagenes FITS.
  *
- * @author josemlp
+ * @author @josemlp and @zerjillo Proyect Ardufocuser-INDI
+ * @version: 22/03/2015/A See { * @linktourl
+ * https://github.com/josemlp91/Ardufocuser-INDI}
  */
 package starprocessor;
 
 import java.util.*;
 import java.io.*;
+import org.eso.fits.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eso.fits.*;
+import javax.imageio.ImageIO;
 
 public class FitsImage {
 
@@ -32,6 +47,14 @@ public class FitsImage {
     private double mean;
     private int max;
 
+    /**
+     * Constructor, genera y iniclializa imagen dado la ruta del archivo.
+     *
+     * @param filename Ruta del archivo con la imagen en formato fits Flexible
+     * Image Transport System. See {
+     * @linktourl http://es.wikipedia.org/wiki/FITS}
+     *
+     */
     public FitsImage(String filename) {
 
         FitsFile file = null;
@@ -150,6 +173,9 @@ public class FitsImage {
         return ImageMatrix[x][y];
     }
 
+    /**
+     * Imprime por pantalla la representación de la matrix.
+     */
     public void printImageMatrix() {
 
         for (int i = 0; i < this.nrow; i++) {
@@ -162,6 +188,9 @@ public class FitsImage {
 
     }
 
+    /**
+     * Imprime por pantalla metadatos adjuntos en la cabecera.
+     */
     public void showKeyword() {
 
         ListIterator itr = this.keyword;
@@ -198,7 +227,42 @@ public class FitsImage {
 
     }
 
-    public void vervose() {
+    /**
+     * Genera archivo JPG.
+     */
+    public void SaveAsJPG() throws IOException {
+
+        short[] imageInByte = new short[nval];
+
+        for (int i = 0; i < this.nval; i++) {
+
+            imageInByte[i] = 9999;
+            //imageInByte[i] = (short) ImageArray[i]  ;
+            //System.out.println(imageInByte[i]);
+
+        }
+
+        BufferedImage image = byte2Buffered(imageInByte, this.ncol, this.nrow);
+        ImageIO.write(image, "png", new File("output.jpg"));
+
+    }
+
+    public static BufferedImage byte2Buffered(short[] pixels, int width, int height) throws IllegalArgumentException {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED);
+
+        return image;
+    }
+
+    public static BufferedImage read(byte[] bytes) {
+        try {
+            return ImageIO.read(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    
+    public void verbose() {
 
         System.out.println("Max value: " + this.max);
         System.out.println("Mean value: " + this.mean);
