@@ -26,9 +26,9 @@ import static starprocessor.StarProcessor.getAllPeak;
  */
 public class GUIMain extends javax.swing.JFrame {
 
-     private GUIInternal vi;
-     
-     
+    private GUIInternal vi;
+    private FitsImage fimg;
+
     /**
      * Creates new form viwes
      */
@@ -36,22 +36,18 @@ public class GUIMain extends javax.swing.JFrame {
 
         initComponents();
         setSize(1100, 800);
-        //GUIInternal vi = new GUIInternal();
-        //this.getEscritorio().add(vi);
-        //vi.setVisible(true);
-        
+
         //File f = new File("/home/josemlp/Menú_006.png");
+        fimg = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
+        fimg.Matrix2BufferedImage(WIDTH);
 
-         FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
-         img.Matrix2BufferedImage(WIDTH);
-          
-         img.SaveAsJPG();
-        
-        BufferedImage bimg = img.Matrix2BufferedImage(TYPE_USHORT_GRAY);
-        GUIInternal.showImage(bimg, "Hola");
-        
+        //img.SaveAsJPG();
+        BufferedImage bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
+        GUIInternal.showImage(bimg, "Imagen Astronomica");
+        meanVal.setText("" + (int) fimg.getMean());
+        maxVal.setText("" + (int) fimg.getMax());
+
         repaint();
-
 
     }
 
@@ -75,8 +71,8 @@ public class GUIMain extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jTextField4 = new javax.swing.JTextField();
-        jTextField5 = new javax.swing.JTextField();
+        meanVal = new javax.swing.JTextField();
+        maxVal = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         jTextField6 = new javax.swing.JTextField();
@@ -132,17 +128,17 @@ public class GUIMain extends javax.swing.JFrame {
 
         jLabel4.setText("Maxima:");
 
-        jTextField4.setEditable(false);
-        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+        meanVal.setEditable(false);
+        meanVal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField4ActionPerformed(evt);
+                meanValActionPerformed(evt);
             }
         });
 
-        jTextField5.setEditable(false);
-        jTextField5.addActionListener(new java.awt.event.ActionListener() {
+        maxVal.setEditable(false);
+        maxVal.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField5ActionPerformed(evt);
+                maxValActionPerformed(evt);
             }
         });
 
@@ -221,8 +217,8 @@ public class GUIMain extends javax.swing.JFrame {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(meanVal, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(maxVal, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -231,11 +227,11 @@ public class GUIMain extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(meanVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(maxVal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGap(4, 4, 4)
@@ -551,13 +547,13 @@ public class GUIMain extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCheckBox1ActionPerformed
 
-    private void jTextField5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField5ActionPerformed
+    private void maxValActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxValActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField5ActionPerformed
+    }//GEN-LAST:event_maxValActionPerformed
 
-    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+    private void meanValActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_meanValActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField4ActionPerformed
+    }//GEN-LAST:event_meanValActionPerformed
 
     private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
         // TODO add your handling code here:
@@ -576,13 +572,11 @@ public class GUIMain extends javax.swing.JFrame {
      */
     public static void main(String args[]) throws IOException, FitsException {
 
-        
-
        // FitsImage img = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
-       // img.showKeyword();
+        // img.showKeyword();
         //img.printImageMatrix();
            /*
-         img.SaveAsJPG();
+       
 
          double means = img.getMean();
          int max = img.getMax();
@@ -642,7 +636,7 @@ public class GUIMain extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public final GUIInternal newWindows(int width, int height) {
         final GUIInternal vi = new GUIInternal();
         escritorio.add(vi);
@@ -650,10 +644,10 @@ public class GUIMain extends javax.swing.JFrame {
         vi.setTitle("Lienzo ");
         vi.setVisible(true);
         setVentanaInterna(vi);
-       
+
         return vi;
     }
-    
+
     public void setVentanaInterna(GUIInternal vi) {
         this.vi = vi;
     }
@@ -691,13 +685,13 @@ public class GUIMain extends javax.swing.JFrame {
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel main_panel_tool;
+    private javax.swing.JTextField maxVal;
+    private javax.swing.JTextField meanVal;
     private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
