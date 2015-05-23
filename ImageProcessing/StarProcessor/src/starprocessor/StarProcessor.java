@@ -22,8 +22,7 @@
  */
 package starprocessor;
 
-import java.util.*;
-import java.io.*;
+import static common.StarFilterStatus.*;
 import org.eso.fits.*;
 
 
@@ -69,8 +68,12 @@ public class StarProcessor {
                 star = IsPeak(i, j, umbralMin, fitsImage);
 
                 if (star.isValid()) {
+                    
+                    //Por el momento no hemos aplicado filtro.
+                    star.setStatus(FILTER_ALL_PASS);  
                     //System.out.println(star.toString());
                     stars.add(star);
+                    
                 }
 
             }
@@ -133,5 +136,9 @@ public class StarProcessor {
 
         return star;
     }
+    
+    
+    
+    
 
 }

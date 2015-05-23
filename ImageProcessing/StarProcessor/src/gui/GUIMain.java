@@ -5,15 +5,12 @@
  */
 package gui;
 
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import static java.awt.image.BufferedImage.TYPE_USHORT_GRAY;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import org.eso.fits.FitsException;
@@ -34,6 +31,7 @@ public class GUIMain extends javax.swing.JFrame {
     public int actual_max_val;
 
     public StarSet stars;
+
     /**
      * Creates new form viwes
      */
@@ -42,7 +40,6 @@ public class GUIMain extends javax.swing.JFrame {
         initComponents();
         setSize(1100, 800);
 
-        //File f = new File("/home/josemlp/Menú_006.png");
         fimg = new FitsImage("/home/josemlp/workspace/pruebasEnfoque/nucleo24880_042.fit");
         fimg.Matrix2BufferedImage(WIDTH);
 
@@ -55,36 +52,19 @@ public class GUIMain extends javax.swing.JFrame {
         actual_max_val = (int) fimg.getMax();
 
         meanVal.setText("" + actual_mean_val);
-        maxVal.setText("" +  actual_max_val);
-        
-        
+        maxVal.setText("" + actual_max_val);
+
         ///Tuning calculos, mecanizar con los calculos.
-        
         int umbralMin = (int) actual_mean_val * 2;
-        int umbralMax = actual_max_val - (actual_max_val * 20) / 100;
+        int umbralMax = actual_max_val - (actual_max_val * 90) / 100;
 
         stars = new StarSet();
         stars = getAllPeak(fimg, 50);
-
-        stars.filterStarByInitialUmbral(umbralMin, umbralMax);
         stars.filterStarByMinDistance(10);
+        stars.filterStarByInitialUmbral(umbralMin, umbralMax);
 
-       int n=stars.get2DPoints().size();
-       
-       
-       
-       System.out.println(n);
-       GUIInternal.lienzo.setStarSet(stars);
-       
-        System.out.println(n);
-        
+        GUIInternal.lienzo.setStarSet(stars);
 
-        
-
-              
-                
-            
-        
         repaint();
 
     }

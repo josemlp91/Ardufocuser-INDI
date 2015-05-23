@@ -5,6 +5,9 @@
  */
 package gui;
 
+import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
+import common.StarFilterStatus;
+import static common.StarFilterStatus.FILTER_NOT_VALID;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -16,6 +19,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import javafx.util.Pair;
 import starprocessor.Star;
 import starprocessor.StarSet;
 
@@ -28,19 +32,20 @@ public class GUILienzo extends javax.swing.JPanel {
     private BufferedImage img;
     private BufferedImage imgDest;
 
-    static Stroke strok = new BasicStroke(10);
-    static Color col;
+    static Stroke strok = new BasicStroke(2);
 
-    ArrayList<Shape> vShape = new ArrayList();
-    public StarSet stars;
+    ArrayList<Pair<StarFilterStatus, Shape>> vShape = new ArrayList<Pair<StarFilterStatus, Shape>>();
+
+    static StarSet stars = new StarSet();
+    private Boolean starload;
 
     /**
      * Creates new form Lienzo
      */
     public GUILienzo() {
-
         initComponents();
-        col = Color.RED;
+
+        this.starload = true;
 
     }
 
@@ -59,25 +64,63 @@ public class GUILienzo extends javax.swing.JPanel {
             g2d.drawImage(imgDest, 0, 0, this);
         }
 
-        for (int i = 0; i < stars.size(); i++) {
-
-            Star s = stars.get(i);
-
-            Point2D.Double p = new Point2D.Double(s.getCoordx(), s.getCoordy());
-
-            Line2D.Double punto = new Line2D.Double(p, p);
-            vShape.add(punto);
-
+        if (this.starload) {
+            loadStars();
         }
 
         //Definimos el contexto.
-        g2d.setPaint(col);
+        
         g2d.setStroke(strok);
 
         //Bucle que pinta cada una de las figuras del array.
-        for (Shape s : vShape) {
-            g2d.fill(s);
-            g2d.draw(s);
+        for (Pair<StarFilterStatus, Shape> s : vShape) {
+
+            switch (s.getKey()) {
+                case FILTER_NOT_VALID:
+                    g2d.setPaint(Color.RED);
+                    break;
+                case FILTER_NOT_APPLY:
+                    g2d.setPaint(Color.BLUE);
+                    break;
+                case FILTER_ALL_PASS:
+                    g2d.setPaint(Color.GREEN);
+                    break;
+                case FILTER_BY_DISTANCE:
+                    g2d.setPaint(Color.YELLOW);
+                    break;
+
+                case FILTER_BY_LESS_UMBRAL:
+                    g2d.setPaint(Color.PINK);
+                    break;
+
+                case FILTER_BY_MORE_UMBRAL:
+                    g2d.setPaint(Color.CYAN);
+                    break;
+
+                case FILTER_BY_MAGIN:
+                    g2d.setPaint(Color.ORANGE);
+                    break;
+
+            }
+
+            g2d.fill(s.getValue());
+            g2d.draw(s.getValue());
+        }
+
+    }
+
+    private void loadStars() {
+
+        for (int i = 0; i < stars.size(); i++) {
+
+            Star s = stars.get(i);
+            Point2D.Double p = new Point2D.Double(s.getCoordx(), s.getCoordy());
+            Line2D.Double punto = new Line2D.Double(p, p);
+
+            Pair pp = new Pair(s.getStatus(), punto);
+            vShape.add(pp);
+            this.starload = false;
+
         }
 
     }
