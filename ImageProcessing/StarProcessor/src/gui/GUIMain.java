@@ -43,7 +43,7 @@ public class GUIMain extends javax.swing.JFrame {
         setSize(1100, 800);
 
         //File f = new File("/home/josemlp/Menú_006.png");
-        fimg = new FitsImage("/home/josemlp/workspace/pruebasEnfoque/nucleo24910_111.fit");
+        fimg = new FitsImage("/home/josemlp/workspace/pruebasEnfoque/nucleo24880_042.fit");
         fimg.Matrix2BufferedImage(WIDTH);
 
         //img.SaveAsJPG();
@@ -70,10 +70,18 @@ public class GUIMain extends javax.swing.JFrame {
         stars.filterStarByMinDistance(10);
 
        int n=stars.get2DPoints().size();
+       
+       
+       
+       System.out.println(n);
+       GUIInternal.lienzo.setStarSet(stars);
+       
         System.out.println(n);
         
+
         
-        vi.getLienzo().stars=stars.get2DPoints();
+
+              
                 
             
         

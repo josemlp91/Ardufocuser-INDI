@@ -16,6 +16,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import starprocessor.Star;
+import starprocessor.StarSet;
 
 /**
  *
@@ -30,7 +32,7 @@ public class GUILienzo extends javax.swing.JPanel {
     static Color col;
 
     ArrayList<Shape> vShape = new ArrayList();
-    public ArrayList<Point2D.Float> stars = new ArrayList();
+    public StarSet stars;
 
     /**
      * Creates new form Lienzo
@@ -39,30 +41,33 @@ public class GUILienzo extends javax.swing.JPanel {
 
         initComponents();
         col = Color.RED;
-        Point2D.Float p1 = new Point2D.Float(1148.f, 668.f);
 
-       System.out.println(stars.size());
-      
-      
-        for (Point2D.Float s : stars) {
-            System.out.println("EEE");
+    }
 
-            Line2D.Double punto = new Line2D.Double(s, s);
-            vShape.add(punto);
+    public void setStarSet(StarSet newstars) {
 
-        }
-
-        Line2D.Double punto = new Line2D.Double(p1, p1);
-        vShape.add(punto);
-
+        System.out.println(newstars.size());
+        this.stars = newstars;
     }
 
     @Override
     public void paint(Graphics g) {
+
         super.paint(g);
         Graphics2D g2d = (Graphics2D) g;
         if (imgDest != null) {
             g2d.drawImage(imgDest, 0, 0, this);
+        }
+
+        for (int i = 0; i < stars.size(); i++) {
+
+            Star s = stars.get(i);
+
+            Point2D.Double p = new Point2D.Double(s.getCoordx(), s.getCoordy());
+
+            Line2D.Double punto = new Line2D.Double(p, p);
+            vShape.add(punto);
+
         }
 
         //Definimos el contexto.

@@ -51,6 +51,10 @@ public class StarSet {
         return points2d;
     }
 
+    public Star get(int i){
+        return stars.get(i);
+    }
+    
     public void add(Star star) {
 
         stars.add(star);
