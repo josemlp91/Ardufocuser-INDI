@@ -25,22 +25,36 @@ public class GUILienzo extends javax.swing.JPanel {
 
     private BufferedImage img;
     private BufferedImage imgDest;
-    
-    static Stroke strok = new BasicStroke(1);
+
+    static Stroke strok = new BasicStroke(10);
     static Color col;
+
     ArrayList<Shape> vShape = new ArrayList();
+    public ArrayList<Point2D.Float> stars = new ArrayList();
 
     /**
      * Creates new form Lienzo
      */
     public GUILienzo() {
-        
+
         initComponents();
         col = Color.RED;
-        Point2D.Float p1 = new Point2D.Float(150.f, 75.f);
+        Point2D.Float p1 = new Point2D.Float(1148.f, 668.f);
+
+       System.out.println(stars.size());
+      
+      
+        for (Point2D.Float s : stars) {
+            System.out.println("EEE");
+
+            Line2D.Double punto = new Line2D.Double(s, s);
+            vShape.add(punto);
+
+        }
+
         Line2D.Double punto = new Line2D.Double(p1, p1);
         vShape.add(punto);
-    
+
     }
 
     @Override

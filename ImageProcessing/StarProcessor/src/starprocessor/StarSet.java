@@ -5,6 +5,7 @@
  */
 package starprocessor;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +30,25 @@ public class StarSet {
 
         for (Star star : this.stars) {
             if (star.isValid()) {
+
                 System.out.println(star.toString());
             }
 
         }
 
+    }
+
+    public ArrayList<Point2D.Float> get2DPoints() {
+
+        ArrayList<Point2D.Float> points2d = new ArrayList();
+        for (Star star : this.stars) {
+            if (star.isValid()) {
+
+                Point2D.Float p = new Point2D.Float(star.getCoordx(), star.getCoordy());
+                points2d.add(p);
+            }
+        }
+        return points2d;
     }
 
     public void add(Star star) {

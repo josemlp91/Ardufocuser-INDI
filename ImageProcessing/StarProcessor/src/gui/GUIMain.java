@@ -19,6 +19,7 @@ import javax.swing.JFileChooser;
 import org.eso.fits.FitsException;
 import starprocessor.FitsImage;
 import static starprocessor.StarProcessor.getAllPeak;
+import starprocessor.StarSet;
 
 /**
  *
@@ -29,24 +30,53 @@ public class GUIMain extends javax.swing.JFrame {
     private GUIInternal vi;
     private FitsImage fimg;
 
+    public int actual_mean_val;
+    public int actual_max_val;
+
+    public StarSet stars;
     /**
      * Creates new form viwes
      */
-    public GUIMain() throws IOException {
+    public GUIMain() throws IOException, FitsException {
 
         initComponents();
         setSize(1100, 800);
 
         //File f = new File("/home/josemlp/Menú_006.png");
-        fimg = new FitsImage("/home/josemlp/pruebasEnfoque/nucleo24910_111.fit");
+        fimg = new FitsImage("/home/josemlp/workspace/pruebasEnfoque/nucleo24910_111.fit");
         fimg.Matrix2BufferedImage(WIDTH);
 
         //img.SaveAsJPG();
         BufferedImage bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
-        GUIInternal.showImage(bimg, "Imagen Astronomica");
-        meanVal.setText("" + (int) fimg.getMean());
-        maxVal.setText("" + (int) fimg.getMax());
 
+        GUIInternal.showImage(bimg, "Imagen Astronomica");
+
+        actual_mean_val = (int) fimg.getMean();
+        actual_max_val = (int) fimg.getMax();
+
+        meanVal.setText("" + actual_mean_val);
+        maxVal.setText("" +  actual_max_val);
+        
+        
+        ///Tuning calculos, mecanizar con los calculos.
+        
+        int umbralMin = (int) actual_mean_val * 2;
+        int umbralMax = actual_max_val - (actual_max_val * 20) / 100;
+
+        stars = new StarSet();
+        stars = getAllPeak(fimg, 50);
+
+        stars.filterStarByInitialUmbral(umbralMin, umbralMax);
+        stars.filterStarByMinDistance(10);
+
+       int n=stars.get2DPoints().size();
+        System.out.println(n);
+        
+        
+        vi.getLienzo().stars=stars.get2DPoints();
+                
+            
+        
         repaint();
 
     }
@@ -501,8 +531,19 @@ public class GUIMain extends javax.swing.JFrame {
         int resp = dlg.showOpenDialog(this);
         if (resp == JFileChooser.APPROVE_OPTION) {
             File f = dlg.getSelectedFile();
-            //Código
-        }        // TODO add your handling code here:
+
+            fimg = new FitsImage(f.getAbsolutePath());
+            fimg.Matrix2BufferedImage(WIDTH);
+
+            //img.SaveAsJPG();
+            BufferedImage bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
+            GUIInternal.showImage(bimg, "Imagen Astronomicaaa");
+            meanVal.setText("" + (int) fimg.getMean());
+            maxVal.setText("" + (int) fimg.getMax());
+
+            repaint();
+
+        }
     }//GEN-LAST:event_openMenuItemActionPerformed
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
@@ -631,6 +672,8 @@ public class GUIMain extends javax.swing.JFrame {
                 try {
                     new GUIMain().setVisible(true);
                 } catch (IOException ex) {
+                    Logger.getLogger(GUIMain.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (FitsException ex) {
                     Logger.getLogger(GUIMain.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }

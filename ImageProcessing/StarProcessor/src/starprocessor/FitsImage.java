@@ -30,8 +30,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
+
+/**
+ * 
+ * @author josemlp
+ * Imagenes Astronomicas FITS 
+ * @see <a href="http://es.wikipedia.org/wiki/FITS">http://es.wikipedia.org/wiki/FITS</a>
+ * 
+ * Encapsula propiedades y métodos para realizar procesamiento este tipo de imágenes de forma cómoda.
+ * 
+ */
+
 public class FitsImage {
 
+    
     private String filename;
     private FitsFile fitsfile;
     private FitsMatrix fitsmatrix;
@@ -135,18 +147,34 @@ public class FitsImage {
 
     }
 
+    /*
+    * Informa del normbre del archivo 
+    * @return nombre archivo 
+    */    
     public String getFilename() {
         return filename;
     }
 
+    /*
+    * Acedemos al binario que contiene los datos de la imagen. 
+    * @return fits file.
+    */    
     public FitsFile getFitsfile() {
         return fitsfile;
     }
 
+    /*
+    * Acedemos a la matrix de la imagen 
+    * @return matrix imagen
+    */    
     public FitsMatrix getFitsmatrix() {
         return fitsmatrix;
     }
 
+    /*
+    * Acedemos a las cabeceras de la imagen
+    * @return metadatos 
+    */ 
     public ListIterator getKeyword() {
         return keyword;
     }
@@ -238,7 +266,7 @@ public class FitsImage {
     }
 
     /**
-     * Genera archivo png iamgen.
+     * Genera archivo png imagen.
      */
     public void SaveAsJPG() throws IOException {
 
@@ -247,6 +275,9 @@ public class FitsImage {
 
     }
 
+    /*
+    * Convierte matrix de pixeles en un buffered Image.
+    */
     public BufferedImage Matrix2BufferedImage(int type) {
         BufferedImage bufferedImage = new BufferedImage(this.ncol, this.nrow, type);
         for (int i = 0; i < this.ncol; i++) {
@@ -269,6 +300,11 @@ public class FitsImage {
         }
     }
 
+    
+    /*
+    * Imprime por pantalla información interesante de la imagen
+    * Metodo interesante para depurar.
+    */
     public void verbose() {
 
         System.out.println("Max value: " + this.max);

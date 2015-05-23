@@ -13,12 +13,36 @@ import java.awt.image.BufferedImage;
  */
 public class GUIInternal extends javax.swing.JInternalFrame {
 
+    
+    //Propiedades de la ventana interna
+    
+    int means;
+    int max;
+    
+    int nstar;
+    int nstar_avalibles;
+    int nstar_not_avalibles;
+    
+    
+    //Filtros aplicados sobre esta ventana.
+    int fac_min;
+    int fac_max;
+    
+    int distancia_entre;
+    int n_estrellas_max;
+    
+   
     /**
      * Creates new form VentanaInterna
-     */
+    */
     public GUIInternal() {
         initComponents();
         
+    }
+    
+    public void loseFocus(){
+    
+    
     }
     
      public static void showImage(BufferedImage img) {
@@ -70,6 +94,7 @@ public class GUIInternal extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         lienzo = new gui.GUILienzo();
 
+        setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
@@ -105,6 +130,6 @@ public class GUIInternal extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane jScrollPane1;
-    private gui.GUILienzo lienzo;
+    public static gui.GUILienzo lienzo;
     // End of variables declaration//GEN-END:variables
 }

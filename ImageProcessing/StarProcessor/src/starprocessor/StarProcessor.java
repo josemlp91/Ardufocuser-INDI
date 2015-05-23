@@ -26,17 +26,18 @@ import java.util.*;
 import java.io.*;
 import org.eso.fits.*;
 
+
+/**
+ * 
+ * @author josemlp
+ * Procesador de estrellas para imagenes FITS
+ * 
+ * Métodos especificos de procesamiento de estrellas (localización, calculo distancias, luminocidad etc)
+ * sobre imagenes FITS.
+ * 
+ */
 public class StarProcessor {
 
-    /**
-     * Rutina principal, para realizar pruebas sobre la libreria.
-     *
-     */
-    
-    //public static void main(String[] args) throws FitsException, IOException {
-
-     
-   // }
 
     /**
      * Busca estrellas, mediante una heuristica basada en puntos elevados en un
@@ -47,7 +48,6 @@ public class StarProcessor {
      * @return conjunto de estrellas encontradas.
      *
      */
-    //TODO eliminar parametro margen de la funcion y llevar a filterByMargin.
     public static StarSet getAllPeak(FitsImage fitsImage, int margin) throws FitsException {
 
         StarSet stars = new StarSet();
