@@ -40,7 +40,22 @@ public class StarSet {
         stars = new ArrayList();
     }
 
+    
+    public int size_aceptadas() {
+        int count = 0;
+        for (int i = 0; i < this.size() - 1; i++) {
+                
+            if (this.get(i).isValid()) {
+                count++;
+            }
+
+        }
+        return count;
+    }
+    
+
     // Calcular numero de estrellas del conjunto.
+
     public int size() {
         return stars.size();
     }

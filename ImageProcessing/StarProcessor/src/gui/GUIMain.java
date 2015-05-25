@@ -13,6 +13,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import org.eso.fits.FitsException;
 import starprocessor.FitsImage;
 import static starprocessor.StarProcessor.getAllPeak;
@@ -26,6 +28,7 @@ public class GUIMain extends javax.swing.JFrame {
 
     private GUIInternal vi;
     private FitsImage fimg;
+    private BufferedImage bimg;
 
     public int actual_mean_val;
     public int actual_max_val;
@@ -44,9 +47,18 @@ public class GUIMain extends javax.swing.JFrame {
         fimg.Matrix2BufferedImage(WIDTH);
 
         //img.SaveAsJPG();
-        BufferedImage bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
+        bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
 
         GUIInternal.showImage(bimg, "Imagen Astronomica");
+
+        ProcesingAndDrawStar();
+    }
+
+    public static JDesktopPane getEscritorio() {
+        return escritorio;
+    }
+
+    public void ProcesingAndDrawStar() throws FitsException {
 
         actual_mean_val = (int) fimg.getMean();
         actual_max_val = (int) fimg.getMax();
@@ -55,22 +67,31 @@ public class GUIMain extends javax.swing.JFrame {
         maxVal.setText("" + actual_max_val);
 
         ///Tuning calculos, mecanizar con los calculos.
-        int umbralMin = (int) actual_mean_val * 2;
-        int umbralMax = actual_max_val - (actual_max_val * 90) / 100;
+        int umbralMin = (int) actual_mean_val * (Integer) min_factor_spinner.getValue();
+        int umbralMax = (int) (actual_max_val - (actual_max_val * (Integer) max_factor_spinner.getValue() / 10));
+
+   
 
         stars = new StarSet();
         stars = getAllPeak(fimg, 50);
-        stars.filterStarByMinDistance(10);
+        stars.filterStarByMinDistance(slider_distancia.getValue());
         stars.filterStarByInitialUmbral(umbralMin, umbralMax);
 
+        int a=stars.size_aceptadas();
+        int t=stars.size();
+       int m = t - a;
+        totales.setText("" + t);
+        aceptadas.setText("" + a);
+        
+
+       rechazadas.setText("" + m);
+        
+        GUIInternal.lienzo.starload = true;
         GUIInternal.lienzo.setStarSet(stars);
 
         repaint();
+        pack();
 
-    }
-
-    public static JDesktopPane getEscritorio() {
-        return escritorio;
     }
 
     /**
@@ -93,21 +114,24 @@ public class GUIMain extends javax.swing.JFrame {
         maxVal = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField6 = new javax.swing.JTextField();
+        totales = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField7 = new javax.swing.JTextField();
+        aceptadas = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jTextField8 = new javax.swing.JTextField();
+        rechazadas = new javax.swing.JTextField();
         escritorio = new javax.swing.JDesktopPane();
         main_panel_tool = new javax.swing.JPanel();
         barra_botton = new javax.swing.JToolBar();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jSpinner1 = new javax.swing.JSpinner();
-        jSpinner2 = new javax.swing.JSpinner();
+        SpinnerModel model = new SpinnerNumberModel(1, 1, 4, 1);
+        min_factor_spinner = new javax.swing.JSpinner(model);
+        SpinnerModel model1 = new SpinnerNumberModel(1, 1, 9, 1);
+        max_factor_spinner = new javax.swing.JSpinner(model1);
         jPanel2 = new javax.swing.JPanel();
-        jSlider1 = new javax.swing.JSlider();
+        slider_distancia = new javax.swing.JSlider();
+        slider_val = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jSpinner3 = new javax.swing.JSpinner();
         jCheckBox1 = new javax.swing.JCheckBox();
@@ -164,28 +188,28 @@ public class GUIMain extends javax.swing.JFrame {
 
         jLabel5.setText("Totales");
 
-        jTextField6.setEditable(false);
-        jTextField6.addActionListener(new java.awt.event.ActionListener() {
+        totales.setEditable(false);
+        totales.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField6ActionPerformed(evt);
+                totalesActionPerformed(evt);
             }
         });
 
         jLabel6.setText("Aceptadas");
 
-        jTextField7.setEditable(false);
-        jTextField7.addActionListener(new java.awt.event.ActionListener() {
+        aceptadas.setEditable(false);
+        aceptadas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField7ActionPerformed(evt);
+                aceptadasActionPerformed(evt);
             }
         });
 
         jLabel7.setText("Rechazadas");
 
-        jTextField8.setEditable(false);
-        jTextField8.addActionListener(new java.awt.event.ActionListener() {
+        rechazadas.setEditable(false);
+        rechazadas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField8ActionPerformed(evt);
+                rechazadasActionPerformed(evt);
             }
         });
 
@@ -196,11 +220,11 @@ public class GUIMain extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(totales, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(aceptadas, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(rechazadas, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(0, 21, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
@@ -209,15 +233,15 @@ public class GUIMain extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(totales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(aceptadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(rechazadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -289,7 +313,7 @@ public class GUIMain extends javax.swing.JFrame {
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 319, Short.MAX_VALUE)
+            .addGap(0, 308, Short.MAX_VALUE)
         );
 
         getContentPane().add(escritorio, java.awt.BorderLayout.CENTER);
@@ -318,8 +342,8 @@ public class GUIMain extends javax.swing.JFrame {
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(min_factor_spinner, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(max_factor_spinner, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(59, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -328,11 +352,11 @@ public class GUIMain extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(min_factor_spinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(max_factor_spinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
@@ -340,21 +364,46 @@ public class GUIMain extends javax.swing.JFrame {
         jPanel2.setToolTipText("Distancia");
         jPanel2.setName(""); // NOI18N
 
+        slider_distancia.setPaintLabels(true);
+        slider_distancia.setPaintTicks(true);
+        slider_distancia.setSnapToTicks(true);
+        slider_distancia.setValue(1);
+        slider_distancia.setValueIsAdjusting(true);
+        slider_distancia.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                slider_distanciaStateChanged(evt);
+            }
+        });
+
+        slider_val.setEditable(false);
+        slider_val.setText("0");
+        slider_val.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                slider_valActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(slider_distancia, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(48, 48, 48))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(45, 45, 45)
+                .addComponent(slider_val, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(29, 29, 29)
-                .addComponent(jSlider1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addComponent(slider_distancia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(slider_val, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Otros filtros"));
@@ -389,6 +438,11 @@ public class GUIMain extends javax.swing.JFrame {
         );
 
         jButton1.setText("Aplicar filtros");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout main_panel_toolLayout = new javax.swing.GroupLayout(main_panel_tool);
         main_panel_tool.setLayout(main_panel_toolLayout);
@@ -584,17 +638,33 @@ public class GUIMain extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_meanValActionPerformed
 
-    private void jTextField6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField6ActionPerformed
+    private void totalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_totalesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField6ActionPerformed
+    }//GEN-LAST:event_totalesActionPerformed
 
-    private void jTextField7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField7ActionPerformed
+    private void aceptadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aceptadasActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField7ActionPerformed
+    }//GEN-LAST:event_aceptadasActionPerformed
 
-    private void jTextField8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField8ActionPerformed
+    private void rechazadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rechazadasActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField8ActionPerformed
+    }//GEN-LAST:event_rechazadasActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+            ProcesingAndDrawStar();        // TODO add your handling code here:
+        } catch (FitsException ex) {
+            Logger.getLogger(GUIMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void slider_valActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_slider_valActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_slider_valActionPerformed
+
+    private void slider_distanciaStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_slider_distanciaStateChanged
+        slider_val.setText("" + slider_distancia.getValue());       // TODO add your handling code here:
+    }//GEN-LAST:event_slider_distanciaStateChanged
 
     /**
      * @param args the command line arguments
@@ -685,6 +755,7 @@ public class GUIMain extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JTextField aceptadas;
     private javax.swing.JToolBar barra_botton;
     private javax.swing.JMenuBar barra_menu;
     private javax.swing.JToolBar barra_tool;
@@ -712,19 +783,19 @@ public class GUIMain extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSlider jSlider1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JSpinner jSpinner3;
-    private javax.swing.JTextField jTextField6;
-    private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextField jTextField8;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JPanel main_panel_tool;
     private javax.swing.JTextField maxVal;
+    private javax.swing.JSpinner max_factor_spinner;
     private javax.swing.JTextField meanVal;
+    private javax.swing.JSpinner min_factor_spinner;
     private javax.swing.JMenuItem openMenuItem;
+    private javax.swing.JTextField rechazadas;
     private javax.swing.JMenuItem saveAsMenuItem;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JSlider slider_distancia;
+    private javax.swing.JTextField slider_val;
+    private javax.swing.JTextField totales;
     // End of variables declaration//GEN-END:variables
 }

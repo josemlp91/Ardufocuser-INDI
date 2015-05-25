@@ -37,7 +37,7 @@ public class GUILienzo extends javax.swing.JPanel {
     ArrayList<Pair<StarFilterStatus, Shape>> vShape = new ArrayList<Pair<StarFilterStatus, Shape>>();
 
     static StarSet stars = new StarSet();
-    private Boolean starload;
+    public Boolean starload;
 
     /**
      * Creates new form Lienzo
@@ -94,7 +94,7 @@ public class GUILienzo extends javax.swing.JPanel {
                     break;
 
                 case FILTER_BY_MORE_UMBRAL:
-                    g2d.setPaint(Color.CYAN);
+                    g2d.setPaint(Color.RED);
                     break;
 
                 case FILTER_BY_MAGIN:
