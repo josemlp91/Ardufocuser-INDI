@@ -8,3 +8,4 @@ Nos centramos en representar los objetos estelare, marcando en distintos colores
 
 
 
+![](https://github.com/josemlp91/Ardufocuser-INDI/blob/gui/Doc/interfaz.png?raw=true)
