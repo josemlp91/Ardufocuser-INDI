@@ -26,4 +26,6 @@ Tambíen se producen detecciones esp ureas causadas por rayos  osmicos
 que aleatoriamente llegan al sensor y que provocan picos de intensidad en la imagen,
 o píxeles defectuosos del sensor.
 
+![](https://raw.githubusercontent.com/josemlp91/Ardufocuser-INDI/master/Doc/book/images/estrella_brillante.png)
+
 
