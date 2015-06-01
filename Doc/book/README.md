@@ -1,11 +1,16 @@
 # Ardufocuser Indi
 
-## Saludos
+## RESUMEN
 
-## Quien soy
+El presente trabajo propone un completo sistema de enfoque diseñado especialemente para aparatos de observación
+astronomica.
 
-## A que me dedico
+El reto al que nos enfrentamos en este proyecto es acercar el hardware y el sofware libre a la
+astronomia para crear herramientas avanzadas con un bajo presupuesto.
 
-## Que es esto
+
+## ABSTRACT
+
+
 
 
