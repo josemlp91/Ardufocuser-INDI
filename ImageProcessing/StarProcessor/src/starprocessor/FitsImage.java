@@ -30,20 +30,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
-
 /**
- * 
- * @author josemlp
- * Imagenes Astronomicas FITS 
- * @see <a href="http://es.wikipedia.org/wiki/FITS">http://es.wikipedia.org/wiki/FITS</a>
- * 
- * Encapsula propiedades y métodos para realizar procesamiento este tipo de imágenes de forma cómoda.
- * 
+ *
+ * @author josemlp Imagenes Astronomicas FITS
+ * @see
+ * <a href="http://es.wikipedia.org/wiki/FITS">http://es.wikipedia.org/wiki/FITS</a>
+ *
+ * Encapsula propiedades y métodos para realizar procesamiento este tipo de
+ * imágenes de forma cómoda.
+ *
  */
-
 public class FitsImage {
 
-    
     private String filename;
     private FitsFile fitsfile;
     private FitsMatrix fitsmatrix;
@@ -148,33 +146,33 @@ public class FitsImage {
     }
 
     /*
-    * Informa del normbre del archivo 
-    * @return nombre archivo 
-    */    
+     * Informa del normbre del archivo 
+     * @return nombre archivo 
+     */
     public String getFilename() {
         return filename;
     }
 
     /*
-    * Acedemos al binario que contiene los datos de la imagen. 
-    * @return fits file.
-    */    
+     * Acedemos al binario que contiene los datos de la imagen. 
+     * @return fits file.
+     */
     public FitsFile getFitsfile() {
         return fitsfile;
     }
 
     /*
-    * Acedemos a la matrix de la imagen 
-    * @return matrix imagen
-    */    
+     * Acedemos a la matrix de la imagen 
+     * @return matrix imagen
+     */
     public FitsMatrix getFitsmatrix() {
         return fitsmatrix;
     }
 
     /*
-    * Acedemos a las cabeceras de la imagen
-    * @return metadatos 
-    */ 
+     * Acedemos a las cabeceras de la imagen
+     * @return metadatos 
+     */
     public ListIterator getKeyword() {
         return keyword;
     }
@@ -276,8 +274,8 @@ public class FitsImage {
     }
 
     /*
-    * Convierte matrix de pixeles en un buffered Image.
-    */
+     * Convierte matrix de pixeles en un buffered Image.
+     */
     public BufferedImage Matrix2BufferedImage(int type) {
         BufferedImage bufferedImage = new BufferedImage(this.ncol, this.nrow, type);
         for (int i = 0; i < this.ncol; i++) {
@@ -301,10 +299,42 @@ public class FitsImage {
     }
 
     
+    //Esta mal usar matrixImage
+    public int[][] getSubMatrix(int cornerX, int cornerY, int dim) {
+
+        int off;
+        off = cornerX;
+        int val;
+        int[][] SubMatrix = new int[dim][dim];
+
+        for (int nr = 0; (nr < this.nrow) && (nr < cornerX + dim); nr++) {
+            int data[] = new int[ncol];
+
+            try {
+                this.fitsmatrix.getIntValues(off, this.ncol, data);
+
+                for (int n = cornerY; (n < ncol) && (n < cornerY + dim); n++) {
+                    val = data[n];
+
+                }
+
+            } catch (FitsException e) {
+            }
+
+            SubMatrix[nr] = data;
+            off += ncol;
+            off += cornerX;
+
+        }
+
+        return SubMatrix;
+
+    }
+
     /*
-    * Imprime por pantalla información interesante de la imagen
-    * Metodo interesante para depurar.
-    */
+     * Imprime por pantalla información interesante de la imagen
+     * Metodo interesante para depurar.
+     */
     public void verbose() {
 
         System.out.println("Max value: " + this.max);
