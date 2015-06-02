@@ -23,12 +23,19 @@ package starprocessor;
 
 import common.StarFilterStatus;
 import static common.StarFilterStatus.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.util.Pair;
 
 public class Star {
 
+    private int fram_dim;
+
     // Coordenadas del plano 2D donde se localizan la estrella.
-    private int coordx;
-    private int coordy;
+    private Point2D.Double coord;
+    private Rectangle2D.Double frame;
 
     // Nivel de luminosidad maxima que alcanza la estrella.
     private float maxlux;
@@ -55,11 +62,24 @@ public class Star {
      * Constructor por defecto que inicializa la estructura.
      */
     public Star() {
-        this.coordx = 0;
-        this.coordy = 0;
+        this.coord = new Point2D.Double();
         this.maxlux = 0;
         this.flagFocus = false;
         this.status = FILTER_NOT_VALID;
+    }
+
+    public void setFrameDim(int dim) {
+
+        this.fram_dim = dim;
+    }
+
+    public void CalculateStarFrame() {
+        this.frame = new Rectangle2D.Double();
+        this.frame.setFrameFromCenter(this.coord.getX(), this.coord.getY(), this.coord.getX() + this.fram_dim, this.coord.getY() + this.fram_dim);
+    }
+
+    public Rectangle2D.Double GetStrarFrame() {
+        return this.frame;
     }
 
     /**
@@ -72,8 +92,10 @@ public class Star {
      * rutinas de enfoque.
      */
     public Star(int coordx, int coordy, float maxlux, Boolean flagFocus) {
-        this.coordx = coordx;
-        this.coordy = coordy;
+        this.coord = new Point2D.Double();
+
+        this.coord.setLocation(coordx, coordy);
+        CalculateStarFrame();
         this.maxlux = maxlux;
         this.flagFocus = flagFocus;
         this.status = FILTER_NOT_VALID;
@@ -89,8 +111,9 @@ public class Star {
      * rutinas de enfoque.
      */
     public void InicializeStar(int coordx, int coordy, float maxlux, Boolean flagFocus) {
-        this.coordx = coordx;
-        this.coordy = coordy;
+
+        this.coord.setLocation(coordx, coordy);
+        CalculateStarFrame();
         this.maxlux = maxlux;
         this.flagFocus = flagFocus;
         this.status = FILTER_ALL_PASS;
@@ -99,12 +122,19 @@ public class Star {
     ///////////////////////////////
     /* GETTERS */
     ////////////////////////////// 
-    public int getCoordx() {
-        return coordx;
+    public double getCoordx() {
+        return coord.getX();
+
     }
 
-    public int getCoordy() {
-        return coordy;
+    public double getCoordy() {
+        return coord.getY();
+
+    }
+
+    public Point2D.Double getCoord() {
+
+        return this.coord;
     }
 
     public float getMaxlux() {
@@ -118,12 +148,10 @@ public class Star {
     ///////////////////////////////
     /* SETTERS */
     ////////////////////////////// 
-    public void setCoordx(int coordx) {
-        this.coordx = coordx;
-    }
+    public void setCoord(double coordx, double coordy) {
 
-    public void setCoordy(int coordy) {
-        this.coordy = coordy;
+        this.coord.setLocation(coordx, coordy);
+        CalculateStarFrame();
     }
 
     public void setMaxlux(float maxlux) {
@@ -156,12 +184,9 @@ public class Star {
      * @param Star estrella a calculara la distancia.
      * @return distancia
      */
-    public float calculateDistanceStar(Star s) {
+    public double calculateDistanceStar(Star s) {
 
-        int h = Math.abs(this.getCoordy() - s.getCoordy());
-        int l = Math.abs(this.getCoordx() - s.getCoordx());
-        float d = (int) Math.sqrt(Math.pow(h, 2) + Math.pow(l, 2));
-
+        double d = this.coord.distance(s.coord);
         return d;
 
     }
@@ -171,7 +196,7 @@ public class Star {
      */
     @Override
     public String toString() {
-        return "Star{" + "coordx=" + coordx + ", coordy=" + coordy + ", maxlux=" + maxlux + '}';
+        return "Star{" + "coordx=" + coord.getX() + ", coordy=" + coord.getY() + ", maxlux=" + maxlux + '}';
     }
 
 }

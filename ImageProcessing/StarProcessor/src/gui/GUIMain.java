@@ -25,73 +25,74 @@ import starprocessor.StarSet;
  * @author josemlp
  */
 public class GUIMain extends javax.swing.JFrame {
-
+    
     private GUIInternal vi;
     private FitsImage fimg;
     private BufferedImage bimg;
-
+    
     public int actual_mean_val;
     public int actual_max_val;
-
+    
     public StarSet stars;
 
     /**
      * Creates new form viwes
      */
     public GUIMain() throws IOException, FitsException {
-
+        
         initComponents();
         setSize(1100, 800);
-
+        
         fimg = new FitsImage("/home/josemlp/workspace/pruebasEnfoque/nucleo24880_042.fit");
         fimg.Matrix2BufferedImage(WIDTH);
 
         //img.SaveAsJPG();
         bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
-
+        
         GUIInternal.showImage(bimg, "Imagen Astronomica");
-
+        
         ProcesingAndDrawStar();
     }
-
+    
     public static JDesktopPane getEscritorio() {
         return escritorio;
     }
-
+    
     public void ProcesingAndDrawStar() throws FitsException {
-
+        
         actual_mean_val = (int) fimg.getMean();
         actual_max_val = (int) fimg.getMax();
-
+        
         meanVal.setText("" + actual_mean_val);
         maxVal.setText("" + actual_max_val);
 
         ///Tuning calculos, mecanizar con los calculos.
         int umbralMin = (int) actual_mean_val * (Integer) min_factor_spinner.getValue();
         int umbralMax = (int) (actual_max_val - (actual_max_val * (Integer) max_factor_spinner.getValue() / 10));
-
-   
-
+        
         stars = new StarSet();
         stars = getAllPeak(fimg, 50);
         stars.filterStarByMinDistance(slider_distancia.getValue());
         stars.filterStarByInitialUmbral(umbralMin, umbralMax);
-
-        int a=stars.size_aceptadas();
-        int t=stars.size();
-       int m = t - a;
+        
+        int a = stars.size_aceptadas();
+        int t = stars.size();
+        
+        stars.setFrame(slider_distancia.getValue());
+        
+        
+        int m = t - a;
         totales.setText("" + t);
         aceptadas.setText("" + a);
         
-
-       rechazadas.setText("" + m);
+        rechazadas.setText("" + m);
         
         GUIInternal.lienzo.starload = true;
         GUIInternal.lienzo.setStarSet(stars);
-
+        
         repaint();
         pack();
-
+        
     }
 
     /**
@@ -573,7 +574,7 @@ public class GUIMain extends javax.swing.JFrame {
         int resp = dlg.showOpenDialog(this);
         if (resp == JFileChooser.APPROVE_OPTION) {
             File f = dlg.getSelectedFile();
-
+            
             fimg = new FitsImage(f.getAbsolutePath());
             fimg.Matrix2BufferedImage(WIDTH);
 
@@ -582,9 +583,9 @@ public class GUIMain extends javax.swing.JFrame {
             GUIInternal.showImage(bimg, "Imagen Astronomicaaa");
             meanVal.setText("" + (int) fimg.getMean());
             maxVal.setText("" + (int) fimg.getMax());
-
+            
             repaint();
-
+            
         }
     }//GEN-LAST:event_openMenuItemActionPerformed
 
@@ -737,7 +738,7 @@ public class GUIMain extends javax.swing.JFrame {
             }
         });
     }
-
+    
     public final GUIInternal newWindows(int width, int height) {
         final GUIInternal vi = new GUIInternal();
         escritorio.add(vi);
@@ -745,10 +746,10 @@ public class GUIMain extends javax.swing.JFrame {
         vi.setTitle("Lienzo ");
         vi.setVisible(true);
         setVentanaInterna(vi);
-
+        
         return vi;
     }
-
+    
     public void setVentanaInterna(GUIInternal vi) {
         this.vi = vi;
     }

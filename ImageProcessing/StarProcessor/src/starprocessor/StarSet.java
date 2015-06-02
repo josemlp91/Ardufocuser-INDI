@@ -40,11 +40,10 @@ public class StarSet {
         stars = new ArrayList();
     }
 
-    
     public int size_aceptadas() {
         int count = 0;
         for (int i = 0; i < this.size() - 1; i++) {
-                
+
             if (this.get(i).isValid()) {
                 count++;
             }
@@ -52,10 +51,16 @@ public class StarSet {
         }
         return count;
     }
-    
+
+    public void setFrame(int dim) {
+        for (Star s : stars) {
+            
+            s.setFrameDim(dim);
+            s.CalculateStarFrame();
+        }
+    }
 
     // Calcular numero de estrellas del conjunto.
-
     public int size() {
         return stars.size();
     }
@@ -128,7 +133,7 @@ public class StarSet {
         for (int j = 0; (j < (stars.size() - 1)) && (i != j); j++) {
             s1 = stars.get(j);
             starnear.add(1, j);
-            dis = s.calculateDistanceStar(s1);
+            dis = (float) s.calculateDistanceStar(s1);
             if (dis < mindis) {
                 return starnear;
             }

@@ -7,6 +7,7 @@ package gui;
 
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
 import common.StarFilterStatus;
+import static common.StarFilterStatus.FILTER_ALL_PASS;
 import static common.StarFilterStatus.FILTER_NOT_VALID;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -34,7 +35,8 @@ public class GUILienzo extends javax.swing.JPanel {
 
     static Stroke strok = new BasicStroke(2);
 
-    ArrayList<Pair<StarFilterStatus, Shape>> vShape = new ArrayList<Pair<StarFilterStatus, Shape>>();
+    private ArrayList<Pair<StarFilterStatus, Shape>> vShape = new ArrayList<Pair<StarFilterStatus, Shape>>();
+    private ArrayList<Shape> vShapeFrames = new ArrayList<Shape>();
 
     static StarSet stars = new StarSet();
     public Boolean starload;
@@ -68,8 +70,14 @@ public class GUILienzo extends javax.swing.JPanel {
             loadStars();
         }
 
+        g2d.setPaint(Color.WHITE);
+        for (Shape f : vShapeFrames) {
+
+            g2d.draw(f);
+
+        }
+
         //Definimos el contexto.
-        
         g2d.setStroke(strok);
 
         //Bucle que pinta cada una de las figuras del array.
@@ -110,15 +118,18 @@ public class GUILienzo extends javax.swing.JPanel {
     }
 
     private void loadStars() {
-
+        vShapeFrames.clear();
         for (int i = 0; i < stars.size(); i++) {
 
             Star s = stars.get(i);
-            Point2D.Double p = new Point2D.Double(s.getCoordx(), s.getCoordy());
-            Line2D.Double punto = new Line2D.Double(p, p);
+            Line2D.Double punto = new Line2D.Double(s.getCoord(), s.getCoord());
 
             Pair pp = new Pair(s.getStatus(), punto);
             vShape.add(pp);
+
+            if (s.getStatus() == FILTER_ALL_PASS) {
+                vShapeFrames.add(s.GetStrarFrame());
+            }
             this.starload = false;
 
         }
