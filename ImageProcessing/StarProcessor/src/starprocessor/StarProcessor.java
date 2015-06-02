@@ -138,6 +138,12 @@ public class StarProcessor {
     }
     
     
+    //calculate means of stars
+    //calculate fwhm of stars
+    
+    
+    
+    
     
     
 

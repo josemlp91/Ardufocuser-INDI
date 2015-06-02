@@ -78,7 +78,7 @@ public class GUIMain extends javax.swing.JFrame {
         int a = stars.size_aceptadas();
         int t = stars.size();
         
-        stars.setFrame(slider_distancia.getValue());
+        stars.setFrame(slider_distancia.getValue()/2);
         
         
         int m = t - a;
