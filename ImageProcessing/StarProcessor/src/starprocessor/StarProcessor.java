@@ -139,7 +139,24 @@ public class StarProcessor {
     
     
     //calculate means of stars
+    public double  CalculateMeansOfSquare(FitsImage fitsImage,int coordX, int coordY, int dim){
+       int[][] SubMatrix=fitsImage.getSubMatrix(coordX, coordY, dim);
+        
+       /**TODO*/
+        
+        
+        return (int) 0.1;}
+    
+    
+    
+    
+    
+    
+    
     //calculate fwhm of stars
+    public double  CalculateFWHMOfSquare(){ return (int) 0.1;}
+    
+    
     
     
     

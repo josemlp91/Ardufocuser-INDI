@@ -298,32 +298,22 @@ public class FitsImage {
         }
     }
 
-    
-    //Esta mal usar matrixImage
+   
     public int[][] getSubMatrix(int cornerX, int cornerY, int dim) {
 
-        int off;
-        off = cornerX;
-        int val;
+        
         int[][] SubMatrix = new int[dim][dim];
 
-        for (int nr = 0; (nr < this.nrow) && (nr < cornerX + dim); nr++) {
-            int data[] = new int[ncol];
+        int i = 0, j = 0;
+        for (int ii = cornerX; ii < this.getNcol() && ii < dim; ii++) {
+            i++;
+            j = 0;
 
-            try {
-                this.fitsmatrix.getIntValues(off, this.ncol, data);
+            for (int jj = cornerY; jj < this.getNrow() && jj < dim; jj++) {
+                j++;
+                SubMatrix[i][j] = this.getValue(ii, jj);
 
-                for (int n = cornerY; (n < ncol) && (n < cornerY + dim); n++) {
-                    val = data[n];
-
-                }
-
-            } catch (FitsException e) {
             }
-
-            SubMatrix[nr] = data;
-            off += ncol;
-            off += cornerX;
 
         }
 
