@@ -24,7 +24,6 @@ package starprocessor;
 import java.util.*;
 import java.io.*;
 import org.eso.fits.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,19 +41,37 @@ import javax.imageio.ImageIO;
  */
 public class FitsImage {
 
+    // Nombre del archivo que almacena la imagen.
     private String filename;
+
+    // Binario con el archivo abierto.
     private FitsFile fitsfile;
+
+    // Pixeles de la imagen (en formato fits)
     private FitsMatrix fitsmatrix;
+
+    // Palabras clave de la cabecera, (metadatos de la imagen)
     private ListIterator keyword;
 
+    // Array lineal con los pixeles de la imagen.
     private int[] ImageArray;
+
+    // Matrix bidimensional con los pixeles de la imagen.
     private int[][] ImageMatrix;
 
+    // Numero de pixeles totales.
     private int nval;
+
+    // Numero de filas.
     private int nrow;
+
+    // Numero de columnas.
     private int ncol;
 
+    // Media de los valores de la imagen.
     private double mean;
+
+    // Maximo de los valores de la imagen.
     private int max;
 
     /**
@@ -71,29 +88,50 @@ public class FitsImage {
 
         try {
 
+            // Abrimos archivo fits 
             file = new FitsFile(filename);
+
             this.fitsfile = file;
 
+            // Get HDUnit in FitsFile by its position. 
+            // If the position is less that 0, the first HDU is returned while the last is given for positions beyond the actual number.
             FitsHDUnit hdu = fitsfile.getHDUnit(0);
+
+            // Cabeceras
             FitsHeader hdr = hdu.getHeader();
             keyword = hdr.getKeywords();
 
             this.fitsmatrix = (FitsMatrix) hdu.getData();
             this.filename = filename;
-            int naxis[] = fitsmatrix.getNaxis();
-            this.nval = fitsmatrix.getNoValues();
 
-            if (0 < nval) {
-                this.ncol = naxis[0];
-                this.nrow = nval / ncol;
+            // Numero de dimensiones 
+            int naxis[] = fitsmatrix.getNaxis();
+
+            // Numero total de pixeles.
+            this.nval = fitsmatrix.getNoValues();
+            try {
+                if (0 < nval) {
+                    // Calculamos numero de filas y de columnas.
+                    this.ncol = naxis[0];
+                    this.nrow = nval / ncol;
+                }
+            } catch (SecurityException ex) {
+                Logger.getLogger(StarProcessor.class
+                        .getName()).log(Level.SEVERE, "Imagen no valida.", ex);
+
+                System.out.println("Imagen no valida.");
+
             }
 
+            // Iniciamos arrays.
             this.ImageArray = new int[this.nval];
             this.ImageMatrix = new int[nrow][ncol];
 
             try {
                 this.fitsmatrix.getIntValues(0, this.nval, ImageArray);
             } catch (FitsException ex) {
+                Logger.getLogger(StarProcessor.class
+                        .getName()).log(Level.SEVERE, "No es posible acceder a los pixeles de la imagen.", ex);
 
             }
 
@@ -107,33 +145,30 @@ public class FitsImage {
                     this.fitsmatrix.getIntValues(off, this.ncol, data);
                     for (int n = 0; n < ncol; n++) {
                         val = data[n];
+                        // Calculo del maximo
                         if (val > max) {
                             this.max = val;
                         }
-
+                        // Calculo de la media.
                         this.mean += val;
                         npix++;
                     }
 
                 } catch (FitsException e) {
+                    Logger.getLogger(StarProcessor.class
+                            .getName()).log(Level.SEVERE, "No es posible acceder a los pixeles de la imagen.", e);
+
                 }
 
                 ImageMatrix[nr] = data;
                 off += ncol;
-
             }
-
-            int transpose[][] = new int[this.ncol][this.nrow];
-
-            for (int c = 0; c < this.nrow; c++) {
-                for (int d = 0; d < this.ncol; d++) {
-                    transpose[d][c] = ImageMatrix[c][d];
-                }
-            }
-
-            this.ImageMatrix = transpose;
 
             this.mean = this.mean / npix;
+
+            // Transponemos la matrix no se porque !!! pero lo tengo que hacer
+            // Depurar bug duro.
+            this.ImageMatrix = traspose();
 
         } catch (IOException ex) {
             Logger.getLogger(StarProcessor.class
@@ -298,10 +333,8 @@ public class FitsImage {
         }
     }
 
-   
     public int[][] getSubMatrix(int cornerX, int cornerY, int dim) {
 
-        
         int[][] SubMatrix = new int[dim][dim];
 
         int i = 0, j = 0;
@@ -332,6 +365,20 @@ public class FitsImage {
         System.out.println("Cols number: " + this.ncol);
         System.out.println("Rows number: " + this.nrow);
         System.out.println("Pixels number: " + this.nval);
+
+    }
+
+    public int[][] traspose() {
+
+        int transpose_matrix[][] = new int[this.ncol][this.nrow];
+
+        for (int c = 0; c < this.nrow; c++) {
+            for (int d = 0; d < this.ncol; d++) {
+                transpose_matrix[d][c] = ImageMatrix[c][d];
+            }
+        }
+
+        return transpose_matrix;
 
     }
 
