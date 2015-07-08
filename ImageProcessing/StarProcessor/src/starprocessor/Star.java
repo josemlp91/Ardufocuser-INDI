@@ -25,9 +25,6 @@ import common.StarFilterStatus;
 import static common.StarFilterStatus.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.List;
-import javafx.util.Pair;
 
 public class Star {
 
@@ -36,6 +33,7 @@ public class Star {
     // Coordenadas del plano 2D donde se localizan la estrella.
     private Point2D.Double coord;
     private Rectangle2D.Double frame;
+    private int[][] SubmatrixImage;
 
     // Nivel de luminosidad maxima que alcanza la estrella.
     private float maxlux;
@@ -68,20 +66,6 @@ public class Star {
         this.status = FILTER_NOT_VALID;
     }
 
-    public void setFrameDim(int dim) {
-
-        this.fram_dim = dim;
-    }
-
-    public void CalculateStarFrame() {
-        this.frame = new Rectangle2D.Double();
-        this.frame.setFrameFromCenter(this.coord.getX(), this.coord.getY(), this.coord.getX() + this.fram_dim, this.coord.getY() + this.fram_dim);
-    }
-
-    public Rectangle2D.Double GetStrarFrame() {
-        return this.frame;
-    }
-
     /**
      * Constructor general.
      *
@@ -95,7 +79,7 @@ public class Star {
         this.coord = new Point2D.Double();
 
         this.coord.setLocation(coordx, coordy);
-        CalculateStarFrame();
+        calculate_star_frame();
         this.maxlux = maxlux;
         this.flagFocus = flagFocus;
         this.status = FILTER_NOT_VALID;
@@ -110,18 +94,39 @@ public class Star {
      * @param flagFocus flag que indica si la estrella es útil para ejecutar
      * rutinas de enfoque.
      */
-    public void InicializeStar(int coordx, int coordy, float maxlux, Boolean flagFocus) {
+    public void inicialize_star(int coordx, int coordy, float maxlux, Boolean flagFocus) {
 
         this.coord.setLocation(coordx, coordy);
-        CalculateStarFrame();
+        calculate_star_frame();
         this.maxlux = maxlux;
         this.flagFocus = flagFocus;
         this.status = FILTER_ALL_PASS;
     }
 
-    ///////////////////////////////
+    public void setSubMatrixImage(int[][] img) {
+        this.SubmatrixImage = img;
+
+    }
+
+    // Asigna la dimension del marco de la estrella.
+    public void setFrameDim(int dim) {
+        this.fram_dim = dim;
+    }
+
+    // Dada la dimension genera el marco de la estrella.
+    public void calculate_star_frame() {
+        this.frame = new Rectangle2D.Double();
+        this.frame.setFrameFromCenter(this.coord.getX(), this.coord.getY(), this.coord.getX() + this.fram_dim, this.coord.getY() + this.fram_dim);
+    }
+
+    // Obtener el marco.
+    public Rectangle2D.Double get_strar_frame() {
+        return this.frame;
+    }
+
+    //////////////
     /* GETTERS */
-    ////////////////////////////// 
+    /////////////
     public double getCoordx() {
         return coord.getX();
 
@@ -130,6 +135,10 @@ public class Star {
     public double getCoordy() {
         return coord.getY();
 
+    }
+
+    public int getFrameDim() {
+        return this.fram_dim;
     }
 
     public Point2D.Double getCoord() {
@@ -145,13 +154,13 @@ public class Star {
         return status;
     }
 
-    ///////////////////////////////
+    //////////////
     /* SETTERS */
-    ////////////////////////////// 
+    /////////////
     public void setCoord(double coordx, double coordy) {
 
         this.coord.setLocation(coordx, coordy);
-        CalculateStarFrame();
+        calculate_star_frame();
     }
 
     public void setMaxlux(float maxlux) {
@@ -164,7 +173,6 @@ public class Star {
 
     /**
      * Indica si la estrella es seleccionada para aplicar rutinas de enfoque.
-     *
      * @return Booleano si la estrella es útil para enfoque.
      */
     public Boolean isValid() {
@@ -184,15 +192,19 @@ public class Star {
      * @param Star estrella a calculara la distancia.
      * @return distancia
      */
-    public double calculateDistanceStar(Star s) {
-
+    public double calculate_distance_star(Star s) {
         double d = this.coord.distance(s.coord);
         return d;
 
     }
 
+    public void calculateSubMatrixImage() {
+
+    }
+
     /**
-     * Escribe por pantalla la estructura estrella en un formato legible.
+     * Escribe por pantalla la estructura estrella en un formato legible. USE:
+     * Debug.
      */
     @Override
     public String toString() {

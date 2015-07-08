@@ -6,6 +6,7 @@
 package gui;
 
 import java.awt.image.BufferedImage;
+import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
 import static java.awt.image.BufferedImage.TYPE_USHORT_GRAY;
 import java.io.File;
 import java.io.IOException;
@@ -17,14 +18,16 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import org.eso.fits.FitsException;
 import starprocessor.FitsImage;
-import static starprocessor.StarProcessor.getAllPeak;
+import static starprocessor.StarProcessor.get_all_peak;
+import static starprocessor.StarProcessor.is_peak_layer;
+
 import starprocessor.StarSet;
 
 /**
  *
  * @author josemlp
  */
-public class GUIMain extends javax.swing.JFrame {
+public final class GUIMain extends javax.swing.JFrame {
     
     private GUIInternal vi;
     private FitsImage fimg;
@@ -37,6 +40,8 @@ public class GUIMain extends javax.swing.JFrame {
 
     /**
      * Creates new form viwes
+     * @throws java.io.IOException
+     * @throws org.eso.fits.FitsException
      */
     public GUIMain() throws IOException, FitsException {
         
@@ -47,9 +52,9 @@ public class GUIMain extends javax.swing.JFrame {
         fimg.Matrix2BufferedImage(WIDTH);
 
         //img.SaveAsJPG();
-        bimg = fimg.Matrix2BufferedImage(TYPE_USHORT_GRAY);
+        bimg = fimg.Matrix2BufferedImage(TYPE_INT_ARGB);
         
-        GUIInternal.showImage(bimg, "Imagen Astronomica");
+        //GUIInternal.showImage(bimg, "Imagen Astronomica");
         
         ProcesingAndDrawStar();
     }
@@ -70,10 +75,35 @@ public class GUIMain extends javax.swing.JFrame {
         int umbralMin = (int) actual_mean_val * (Integer) min_factor_spinner.getValue();
         int umbralMax = (int) (actual_max_val - (actual_max_val * (Integer) max_factor_spinner.getValue() / 10));
         
-        stars = new StarSet();
-        stars = getAllPeak(fimg, 50);
-        stars.filterStarByMinDistance(slider_distancia.getValue());
-        stars.filterStarByInitialUmbral(umbralMin, umbralMax);
+        
+        // Creamos un primer conjunto.
+        stars = new StarSet(fimg);
+        
+        System.out.println("Estrellas iniciales");
+        System.out.println(stars.size_aceptadas());
+        stars.filter_star_by_initial_umbral(umbralMin, umbralMax);
+        System.out.println("Filtro umbrales");
+        System.out.println(stars.size_aceptadas());
+       
+        System.out.println(fimg.getNcol());
+        System.out.println(fimg.getNrow());
+        System.out.println("sssssssss");
+        
+        
+        // Ejemplo 
+        is_peak_layer(949,775,  fimg, 5);
+        
+
+
+        //stars.print_star_set();
+        
+        
+        
+        
+        /*
+        stars = get_all_peak(fimg, 50);
+        stars.filter_star_by_min_distance(slider_distancia.getValue());
+       
         
         int a = stars.size_aceptadas();
         int t = stars.size();
@@ -90,8 +120,10 @@ public class GUIMain extends javax.swing.JFrame {
         GUIInternal.lienzo.starload = true;
         GUIInternal.lienzo.setStarSet(stars);
         
-        repaint();
-        pack();
+        */
+        
+        //repaint();
+        //pack();
         
     }
 
@@ -152,6 +184,7 @@ public class GUIMain extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1024, 800));
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
         barra_tool.setFloatable(false);
         barra_tool.setRequestFocusEnabled(false);
@@ -299,7 +332,7 @@ public class GUIMain extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE))
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 328, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel4, java.awt.BorderLayout.LINE_END);
@@ -314,7 +347,7 @@ public class GUIMain extends javax.swing.JFrame {
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 308, Short.MAX_VALUE)
+            .addGap(0, 306, Short.MAX_VALUE)
         );
 
         getContentPane().add(escritorio, java.awt.BorderLayout.CENTER);

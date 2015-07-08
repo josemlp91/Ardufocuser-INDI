@@ -9,8 +9,10 @@ El reto al que nos enfrentamos en este proyecto es acercar el hardware y el sofw
 astronomia para crear herramientas avanzadas con un bajo presupuesto.
 
 
+
+
 ## ABSTRACT
 
 
-
+## Fu
 

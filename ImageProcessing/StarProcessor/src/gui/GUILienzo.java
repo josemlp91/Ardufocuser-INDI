@@ -6,6 +6,7 @@
 package gui;
 
 import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Int;
+import common.Pair;
 import common.StarFilterStatus;
 import static common.StarFilterStatus.FILTER_ALL_PASS;
 import static common.StarFilterStatus.FILTER_NOT_VALID;
@@ -20,7 +21,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import javafx.util.Pair;
+
 import starprocessor.Star;
 import starprocessor.StarSet;
 
@@ -33,12 +34,12 @@ public class GUILienzo extends javax.swing.JPanel {
     private BufferedImage img;
     private BufferedImage imgDest;
 
-    static Stroke strok = new BasicStroke(2);
+    static Stroke strok = new BasicStroke(1);
 
     private ArrayList<Pair<StarFilterStatus, Shape>> vShape = new ArrayList<Pair<StarFilterStatus, Shape>>();
     private ArrayList<Shape> vShapeFrames = new ArrayList<Shape>();
 
-    static StarSet stars = new StarSet();
+    static StarSet stars;
     public Boolean starload;
 
     /**
@@ -53,7 +54,6 @@ public class GUILienzo extends javax.swing.JPanel {
 
     public void setStarSet(StarSet newstars) {
 
-        System.out.println(newstars.size());
         this.stars = newstars;
     }
 
@@ -70,20 +70,21 @@ public class GUILienzo extends javax.swing.JPanel {
             loadStars();
         }
 
-        g2d.setPaint(Color.WHITE);
+        /*g2d.setPaint(Color.BLUE);
         for (Shape f : vShapeFrames) {
 
             g2d.draw(f);
 
         }
 
+        */
         //Definimos el contexto.
         g2d.setStroke(strok);
 
         //Bucle que pinta cada una de las figuras del array.
-        for (Pair<StarFilterStatus, Shape> s : vShape) {
+         for (Pair<StarFilterStatus, Shape> s : vShape) {
 
-            switch (s.getKey()) {
+            switch (s.getLeft()) {
                 case FILTER_NOT_VALID:
                     g2d.setPaint(Color.RED);
                     break;
@@ -91,7 +92,7 @@ public class GUILienzo extends javax.swing.JPanel {
                     g2d.setPaint(Color.BLUE);
                     break;
                 case FILTER_ALL_PASS:
-                    g2d.setPaint(Color.GREEN);
+                    g2d.setPaint(Color.RED);
                     break;
                 case FILTER_BY_DISTANCE:
                     g2d.setPaint(Color.YELLOW);
@@ -102,7 +103,7 @@ public class GUILienzo extends javax.swing.JPanel {
                     break;
 
                 case FILTER_BY_MORE_UMBRAL:
-                    g2d.setPaint(Color.RED);
+                    g2d.setPaint(Color.MAGENTA);
                     break;
 
                 case FILTER_BY_MAGIN:
@@ -111,8 +112,8 @@ public class GUILienzo extends javax.swing.JPanel {
 
             }
 
-            g2d.fill(s.getValue());
-            g2d.draw(s.getValue());
+            g2d.fill(s.getRight());
+            g2d.draw(s.getRight());
         }
 
     }
@@ -128,7 +129,7 @@ public class GUILienzo extends javax.swing.JPanel {
             vShape.add(pp);
 
             if (s.getStatus() == FILTER_ALL_PASS) {
-                vShapeFrames.add(s.GetStrarFrame());
+                vShapeFrames.add(s.get_strar_frame());
             }
             this.starload = false;
 

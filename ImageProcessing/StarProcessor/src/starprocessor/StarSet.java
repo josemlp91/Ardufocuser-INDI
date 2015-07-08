@@ -14,13 +14,15 @@
  */
 package starprocessor;
 
+import static common.StarFilterStatus.FILTER_ALL_PASS;
 import static common.StarFilterStatus.FILTER_BY_DISTANCE;
 import static common.StarFilterStatus.FILTER_BY_LESS_UMBRAL;
 import static common.StarFilterStatus.FILTER_BY_MAGIN;
 import static common.StarFilterStatus.FILTER_BY_MORE_UMBRAL;
+import static common.StarFilterStatus.FILTER_NOT_APPLY;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.util.Pair;
+import static starprocessor.StarProcessor.is_peak_brightness;
 
 /**
  * Clase destinada a modelar un conjunto de estrellas presentes en la misma
@@ -32,14 +34,50 @@ import javafx.util.Pair;
  */
 public class StarSet {
 
-    // Array de objetos Estrell
+    // Array de objetos Estrella
     private List<Star> stars;
+    private FitsImage fitsimage;
 
-    // Constructor por defecto.
-    public StarSet() {
+    
+    /** Crea un conjunto inicial de estrellas dado un filtro básico.
+     *  Esto no son estrellas ni nada.
+     *
+     * @param fitsImage
+     */
+    public StarSet(FitsImage fitsImage) {
+
+        this.fitsimage = fitsImage;
         stars = new ArrayList();
+
+        Star star = null;
+
+        int col = fitsImage.getNcol();
+        int row = fitsImage.getNrow();
+        double mean = fitsImage.getMean();
+
+        ///////////PARAMETROS/////////////////
+        int umbralMin = (int) (mean) * 2;
+        int radio = 3;
+        int margin = 10;
+        /////////////////////////////////////
+
+        System.out.println("Umbral min inicial: " + umbralMin);
+        for (int i = 0 + margin; i < (col - margin); i++) {
+            for (int j = 0 + margin; j < (row - margin); j++) {
+                if (is_peak_brightness(i, j, umbralMin, fitsImage, radio)) {
+                    star=new Star();
+                    star.inicialize_star(i, j, fitsImage.getValue(i, j), true);
+                    star.setStatus(FILTER_NOT_APPLY);
+                    stars.add(star);
+                }
+                
+                
+            }
+        }
+
     }
 
+    // Cuenta estrellas que pasan los filtros.
     public int size_aceptadas() {
         int count = 0;
         for (int i = 0; i < this.size() - 1; i++) {
@@ -52,11 +90,12 @@ public class StarSet {
         return count;
     }
 
+    // Asigna marco a todo el conjunto de estrellas.
     public void setFrame(int dim) {
         for (Star s : stars) {
-            
+
             s.setFrameDim(dim);
-            s.CalculateStarFrame();
+            s.calculate_star_frame();
         }
     }
 
@@ -72,7 +111,6 @@ public class StarSet {
 
     // Añadimos un objeto estrella al conjunto.
     public void add(Star star) {
-
         stars.add(star);
     }
 
@@ -82,27 +120,18 @@ public class StarSet {
     ///////////////////////////////////////////////////////////////////////////   
     //OJO:  Los filtros se aplican a todas las estrellas del conjunto.
     // Se puede cambiar a un modo en cascada para optimizar el proceso.
-    /**
-     * Constructor general.
-     *
-     * @param misdis distancia mínima entre estrellas.
-     * @param coordy coordenada en el eje de ordenadas.
-     * @param maxlux valor de luminocidad máximo.
-     * @param flagFocus indica si la estrella es interesante para ejecutar
-     * rutinas de enfoque.
+    /*
+     * Descarta estrella proximas unas de las otras.
      */
-    public void filterStarByMinDistance(float mindis) {
+    public void filter_star_by_min_distance(float mindis) {
 
         Star s, s1;
-        float dis;
-        float ndis;
-        Boolean isnear;
         ArrayList<Integer> starnear = new ArrayList<Integer>();
         // Por cada estrella del conjunto.
         for (int i = 0; i < stars.size() - 1; i++) {
 
             // Seleccionamos el resto de estrellas del conjunto 
-            starnear = IsStarTooNear(i, mindis);
+            starnear = is_star_too_near(i, mindis);
 
             // Si la distancia es menor a la distancia especificada
             if (starnear.size() > 0) {
@@ -121,8 +150,14 @@ public class StarSet {
         }
 
     }
+    
+    
 
-    private ArrayList<Integer> IsStarTooNear(int i, float mindis) {
+    /*
+     * Comprueba si la estrella almacenada en el indice i, esta a una distancia menor de mindis
+     * de la estrella actual.
+     */
+    private ArrayList<Integer> is_star_too_near(int i, float mindis) {
         Star s, s1;
         ArrayList<Integer> starnear = new ArrayList<Integer>();
 
@@ -133,7 +168,7 @@ public class StarSet {
         for (int j = 0; (j < (stars.size() - 1)) && (i != j); j++) {
             s1 = stars.get(j);
             starnear.add(1, j);
-            dis = (float) s.calculateDistanceStar(s1);
+            dis = (float) s.calculate_distance_star(s1);
             if (dis < mindis) {
                 return starnear;
             }
@@ -144,7 +179,10 @@ public class StarSet {
 
     }
 
-    public void filterStarByInitialUmbral(int umbralMinimo, int umbralMaximo) {
+    /*
+     * Filtra estrella por los umbrales de luminocidad, maximo y minimo.
+     */
+    public void filter_star_by_initial_umbral(int umbralMinimo, int umbralMaximo) {
 
         for (Star star : this.stars) {
             if (star.getMaxlux() < umbralMinimo) {
@@ -164,7 +202,10 @@ public class StarSet {
 
     }
 
-    public void filterStarByMargin(int margin, int dimx, int dimy) {
+    /*
+     * Descarta estrella que esta proximas al borde o margen de la imagen.
+     */
+    public void filter_star_by_margin(int margin, int dimx, int dimy) {
 
         for (Star star : this.stars) {
             if ((star.getCoordx() < margin) || (star.getCoordx() > dimx - margin)
@@ -175,8 +216,32 @@ public class StarSet {
 
         }
     }
+    
+    
+     /*
+     * Descarta estrella no cumplir la heuristica de capas.
+     */
+    public void filter_star_by_layer(int margin, int dimx, int dimy) {
 
-    public void printStarSet() {
+         //Boolean is_peak_layer(int coorx, int coory, FitsImage img, int nlayer);
+         
+         
+    }
+    
+ 
+
+    public void set_image_submatrix_to_stars() {
+
+        for (Star s : stars) {
+            s.setSubMatrixImage(fitsimage.getSubMatrix((int) s.get_strar_frame().getX(), (int) s.get_strar_frame().getY(), s.getFrameDim()));
+        }
+    }
+
+    /*
+     * Imprime el conjunto de estrellas.
+     *  USE: Debug
+     */
+    public void print_star_set() {
 
         for (Star star : this.stars) {
             if (star.isValid()) {
@@ -186,5 +251,9 @@ public class StarSet {
         }
 
     }
+    
+    
+    
+     
 
 }
