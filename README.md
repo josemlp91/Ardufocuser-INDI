@@ -10,7 +10,7 @@ que pueden por comodidad ocupan repositorios distintos.
 
 * Firmware Arduino y esquematicos electronicos: [https://github.com/josemlp91/ardufocuser-firmware](https://github.com/josemlp91/ardufocuser-firmware)
 * Driver INDI: [https://github.com/josemlp91/ardufocuser-indidriver](https://github.com/josemlp91/ardufocuser-indidriver)
-* Procesamiento de imagenes estelares.
+* Procesamiento de imagenes estelares. [https://github.com/josemlp91/ardufocuser_image-processing](https://github.com/josemlp91/ardufocuser_image-processing)
 * Cliente Java Indi con funciones de autoenfoque.
 * Documentación y bibliografia:
 
