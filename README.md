@@ -12,7 +12,7 @@ que pueden por comodidad ocupan repositorios distintos.
 * Driver INDI: [https://github.com/josemlp91/ardufocuser-indidriver](https://github.com/josemlp91/ardufocuser-indidriver)
 * Procesamiento de imagenes estelares. [https://github.com/josemlp91/ardufocuser_image-processing](https://github.com/josemlp91/ardufocuser_image-processing)
 * Cliente Java Indi con funciones de autoenfoque.
-* Documentación y bibliografia: (https://github.com/josemlp91/ardufocuser_documentations)[https://github.com/josemlp91/ardufocuser_documentations]
+* Documentación y bibliografia: [https://github.com/josemlp91/ardufocuser_documentations](https://github.com/josemlp91/ardufocuser_documentations)
 
 
 
