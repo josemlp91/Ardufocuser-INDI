@@ -5,8 +5,7 @@ Sistema de autoenfoque para instrumentos astronómicos, usando software y hardwa
 
 ![](https://raw.githubusercontent.com/josemlp91/Ardufocuser-INDI/master/graphics/logo/simple.png)
 
-Este proyecto se enlaza con los siguintes reposistorios, dado que son módulos totalmente separados
-ocupan repositorios distintos.
+Este proyecto se enlaza con los siguintes reposistorios, dado que son módulos que pueden tener entidad propia:
 
 * Firmware Arduino y esquematicos electronicos: [https://github.com/josemlp91/ardufocuser-firmware](https://github.com/josemlp91/ardufocuser-firmware)
 * Driver INDI: [https://github.com/josemlp91/ardufocuser-indidriver](https://github.com/josemlp91/ardufocuser-indidriver)
